@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.LinkedList;
 
-public class lightActivity extends AppCompatActivity {
+public class LightActivity extends AppCompatActivity {
     private Socket socket;
     private BufferedReader br;
     private PrintWriter pr;
