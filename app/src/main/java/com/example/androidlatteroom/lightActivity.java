@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.LinkedList;
 
-public class LightActivity extends AppCompatActivity {
+public class lightActivity extends AppCompatActivity {
     private Socket socket;
     private BufferedReader br;
     private PrintWriter pr;
@@ -85,7 +85,7 @@ public class LightActivity extends AppCompatActivity {
 
         Thread t = new Thread(() -> {
             try {
-                socket = new Socket("70.12.60.94", 55566);
+                socket = new Socket("70.12.60.94", 55566); // 70.12.60.111
                 br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 pr = new PrintWriter(socket.getOutputStream());
 
