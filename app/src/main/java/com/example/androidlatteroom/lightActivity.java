@@ -115,8 +115,6 @@ public class LightActivity extends AppCompatActivity {
 //                        }
 
                     }
-
-
                 });
                 getData.start();
 
