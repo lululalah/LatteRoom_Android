@@ -62,15 +62,20 @@ public class lightActivity extends AppCompatActivity {
         }
 
         public void send(String msg) {
+            try {
             pr.println(msg);
             pr.flush();
+
+            }catch(Exception e){
+                Log.i("test",e.toString());
+            }
+
 
         }
 
     }
 
     private SharedObject shared = new SharedObject();
-    private Button on;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,48 +88,8 @@ public class lightActivity extends AppCompatActivity {
 
         //lightPower.setText("msg");
 
-        Thread t = new Thread(() -> {
-            try {
-                socket = new Socket("70.12.60.94", 55566);
-                br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                pr = new PrintWriter(socket.getOutputStream());
-
-                Thread getData = new Thread(() -> {
-                    try {
-                        String msg = "";
-                        while ((msg = br.readLine()) != null) {
-
-                            Log.i("test", "!!!!");
-                            Log.i("test", msg);
-                            curTmp = msg;
-                            if (!"Off".equals(curTmp)) {
-                                curtmp = Integer.valueOf(curTmp);
-                            }
-                            lightPower.setText(msg + "`");
 
 
-                        }
-                    } catch (IOException e) {
-                        Log.i("test", e.toString());
-//                        try {
-//                            br.close();
-//                            pr.close();
-//                            socket.close();
-//                        } catch (IOException ex) {
-//                            ex.printStackTrace();
-//                        }
-
-                    }
-
-
-                });
-                getData.start();
-
-            } catch (IOException e) {
-            }
-        });
-
-        t.start();
 
         SeekBar sb = (SeekBar) findViewById(R.id.lightSeekbar);
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -151,15 +116,64 @@ public class lightActivity extends AppCompatActivity {
             }
         });
 
+        Thread t = new Thread(() -> {
+            try {
+                socket = new Socket("70.12.60.94", 55566);
+                br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                pr = new PrintWriter(socket.getOutputStream());
+
+
+
+                // 해당 Runnable 객체에 BufferedRead와 변경되어야 하는 컴포넌트들을 주입시킨후
+                // 해당 Runnable 객체에서 메서드를 이용하여 컴포넌트 값들의 값을 서버로 전송 or 받기.
+                GetDataLight getdataR = new GetDataLight(br,lightPower,curtmp,sb,shared);
+                Thread getDataT = new Thread(getdataR);
+//                Thread getData = new Thread(() -> {
+//                    try {
+//                        String msg = "";
+//                        while ((msg = br.readLine()) != null) {
+//
+//                            Log.i("test", "!!!!");
+//                            Log.i("test", msg);
+//                            curTmp = msg;
+//                            if (!"Off".equals(curTmp)) {
+//                                curtmp = Integer.valueOf(curTmp);
+//                            }
+//                            lightPower.setText(msg + "`");
+//
+//
+//                        }
+//                    } catch (IOException e) {
+//                        Log.i("test", e.toString());
+////                        try {
+////                            br.close();
+////                            pr.close();
+////                            socket.close();
+////                        } catch (IOException ex) {
+////                            ex.printStackTrace();
+////                        }
+//
+//                    }
+//
+//
+//                });
+                getDataT.start();
+
+            } catch (IOException e) {
+            }
+        });
+
+        t.start();
+//        connServer conn = new connServer(socket,br,pr,lightPower,this.curtmp);
+//        Thread t = new Thread(conn);
+//        t.start();
+
 
         onBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String preTmp = String.valueOf(curtmp);
-                sb.setProgress(curtmp);
-                lightPower.setText(preTmp);
                 Thread t = new Thread(() -> {
-                    shared.send(preTmp);
+                    shared.send("On");
                 });
                 t.start();
             }
@@ -167,7 +181,7 @@ public class lightActivity extends AppCompatActivity {
         offBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sb.setProgress(0);
+                //sb.setProgress(0);
                 lightPower.setText("0");
                 Thread t = new Thread(() -> {
                     shared.send("Off");
@@ -183,5 +197,101 @@ public class lightActivity extends AppCompatActivity {
         super.onDestroy();
         Log.i("test", " " + socket.isConnected());
 
+    }
+}
+
+//class connServer implements Runnable {
+//    private Socket socket;
+//    private BufferedReader br;
+//    private PrintWriter pr;
+//
+//    private TextView lightPower;
+//    private int setData;
+//
+//    connServer(Socket socket,BufferedReader br,PrintWriter pr,TextView lightPower,int setData){
+//        this.socket = socket;
+//        this.br = br;
+//        this.pr = pr;
+//        this.lightPower =lightPower;
+//        this.setData = setData;
+//    }
+//
+//
+//    @Override
+//    public void run() {
+//        try {
+//            socket = new Socket("70.12.60.94", 55566);
+//            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//            pr = new PrintWriter(socket.getOutputStream());
+//            Log.i("test","connect");
+//            GetData getdata = new GetData(this.br,this.lightPower,this.setData);
+//           Thread t = new Thread(getdata);
+//            t.start();
+//
+//
+//    }catch (IOException e){
+//        }
+//    }
+//
+//
+//}
+
+
+class GetDataLight implements Runnable{
+    private String msg;
+    private String getData;
+    private BufferedReader br;
+    private TextView lightPower;
+    private SeekBar sb;
+    private Object shared;
+    private int setData;
+
+    GetDataLight(BufferedReader br,TextView lightPower,int setData,SeekBar sb,Object shared){
+        this.br = br;
+        this.lightPower = lightPower;
+        this.setData = setData;
+        this.sb = sb;
+        this.shared = shared;
+    }
+
+
+    @Override
+    public void run() {
+        try {
+            Log.i("test","doGetData");
+            Log.i("test",String.valueOf(setData));
+            while ((msg = br.readLine()) != null) {
+
+                Log.i("test", "!!!!");
+                Log.i("test", msg);
+                getData = msg;
+
+
+
+                if (!"Off".equals(getData)) {
+
+                    setData = Integer.valueOf(getData);
+                }
+                if("On".equals(getData)){
+                    //sb.setProgress(100);
+                }else if("Off".equals(getData)){
+                    Log.i("test","이전 온도"+Integer.toString(setData));
+                    sb.setProgress(0);
+                }
+                lightPower.setText(msg + "`");
+
+
+            }
+        } catch (IOException e) {
+            Log.i("test", e.toString());
+//                        try {
+//                            br.close();
+//                            pr.close();
+//                            socket.close();
+//                        } catch (IOException ex) {
+//                            ex.printStackTrace();
+//                        }
+
+        }
     }
 }
