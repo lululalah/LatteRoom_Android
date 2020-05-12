@@ -73,6 +73,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+        Button test = findViewById(R.id.test);
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                ComponentName cname = new ComponentName("com.example.androidlatteroom",
+                        "com.example.androidlatteroom.TestActivity");
+                i.setComponent(cname);
+                startActivity(i);
+            }
+        });
     }
 
     @Override

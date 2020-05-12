@@ -13,6 +13,8 @@ import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -111,6 +113,22 @@ public class climateActivity extends AppCompatActivity {
 
         }
 
+        public void connectServer() {
+            Thread t = new Thread(() -> {
+                send("curTmp,25");
+                //send();
+            });
+            t.start();
+        }
+
+        public void checkDeviceState() {
+            Thread t = new Thread(() -> {
+                send("check");
+            });
+            t.start();
+
+        }
+
     }
 
     private SharedObject shared = new SharedObject();
@@ -125,21 +143,30 @@ public class climateActivity extends AppCompatActivity {
         SeekBar climate_seekBar = findViewById(R.id.climate_seekBar);
         TextView climate_sbValue = findViewById(R.id.climate_sbValue); //희망온도설정
         TextView climateSensorValue = findViewById(R.id.climateSensorValue); //현재온도
+        TextView climateCondition = findViewById(R.id.climateCondition);
 
-        final SharedObject shared = new SharedObject();
+
+        //final SharedObject shared = new SharedObject();
 
         climate_seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            Thread t;
+
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //setClimate(i);
                 //climate_sbValue.setText( i + "°C");
+                climate_sbValue.setText(progress + "°C");
 
-
-                Thread t = new Thread(()->{
-
-                shared.send("hopeTmp,"+Integer.toString(i));
+                t = new Thread(() -> {
+                    String code = "hopeTmp";
+                    String value = Integer.toString(progress);
+                    shared.send("hopeTmp," + Integer.toString(progress));
+                    //Json 문자열로 변환
+//                    sendMsg msg = new sendMsg(code,value);
+//                    Log.i("test",msg.makeJson());
+//                    shared.send(msg.makeJson());
                 });
-                t.start();
+
                 //shared.put(i);
             }
 
@@ -150,6 +177,7 @@ public class climateActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                t.start();
             }
         });
 
@@ -164,13 +192,13 @@ public class climateActivity extends AppCompatActivity {
                 String result = "";
 
                 if ((result = msg.getData().getString("curTmp")) != null) {
-                    climateMSG.setText(result);
-                }
-                if ((result = msg.getData().getString("hopeTmp")) != null) {
+                    climateSensorValue.setText(result + "°C");
+                } else if ((result = msg.getData().getString("hopeTmp")) != null) {
                     climate_sbValue.setText(result + "°C");
-                }
-                if ((result = msg.getData().getString("status")) != null) {
+                } else if ((result = msg.getData().getString("status")) != null) {
                     climate_status.setText(result);
+                } else if ((result = msg.getData().getString("deviceStatus")) != null) {
+                    climateCondition.setText(result);
                 }
 
             }
@@ -185,7 +213,8 @@ public class climateActivity extends AppCompatActivity {
                         climate_status, climate_seekBar, shared, handler);
                 Thread getData = new Thread(runnable);
                 getData.start();
-
+                shared.connectServer();
+                shared.checkDeviceState();
             } catch (IOException e) {
                 Log.i("test", e.toString());
             }
@@ -260,22 +289,18 @@ class GetDataClimate implements Runnable {
     @Override
     public void run() {
 
-        //shared.put("curTmp,-25`");
+        //shared.put("curTmp,27°C");
         //shared.put("hopeTmp,25`");
         //shared.put("status,On");
 
-        Thread t = new Thread(() -> {
-            while (true) {
-
-                shared.pop();
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        });
+//        Thread t = new Thread(() -> {
+//
+//
+//                shared.pop();
+//
+//            }
+//
+//        );
 
 //        pr.println();
 //        pr.flush();
@@ -286,8 +311,9 @@ class GetDataClimate implements Runnable {
             String code = "";
             String value = "";
             String test;
-            t.start();
+
             while ((msg = br.readLine()) != null) {
+
                 Message message = new Message();
 
                 Bundle bundle = new Bundle();
@@ -334,6 +360,11 @@ class GetDataClimate implements Runnable {
 //                    });
 
                 }
+                if ("check".equals(code)) {
+                    bundle.putString("deviceStatus", value);
+                    message.setData(bundle);
+                }
+
                 handler.sendMessage(message);
 
             }
@@ -344,4 +375,39 @@ class GetDataClimate implements Runnable {
         }
     }
 }
+
+//class sendMsg{
+//
+//    String code;
+//    String value;
+//
+//    static Gson gson = new Gson();
+//
+//
+//    sendMsg(String code,String value){
+//        this.code = code;
+//        this.value = value;
+//    }
+//
+//    public String makeJson(){
+//        String msg = gson.toJson(new sendMsg(this.code,this.value));
+//        return msg;
+//    }
+//
+//    public String getCode() {
+//        return code;
+//    }
+//
+//    public String getValue() {
+//        return value;
+//    }
+//
+//    public void setCode(String code) {
+//        this.code = code;
+//    }
+//
+//    public void setValue(String value) {
+//        this.value = value;
+//    }
+//}
 

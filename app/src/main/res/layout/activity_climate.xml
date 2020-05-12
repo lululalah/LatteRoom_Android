@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical">
 
-<!--    현재온도는 ~도 입니다.-->
+    <!--    현재온도는 ~도 입니다.-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="현재온도는" />
+
     <TextView
         android:id="@+id/climateSensorValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="°C입니다."/>
+        android:text="°C입니다." />
 
 
     <!--    온도를 맞춰드릴게요(?)-->
@@ -24,15 +27,34 @@
         android:id="@+id/climateCondition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=" "/>
+        android:text=" " />
 
-<!--    희망온도설정-->
-    <TextView
-        android:id="@+id/climate_sbValue"
+    <!--    희망온도설정-->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="12pt"
-        android:text="희망온도: "/>
+        android:orientation="horizontal">
+
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="희망온도: "
+            android:textSize="12pt"
+            android:layout_weight="2"/>
+
+        <TextView
+            android:id="@+id/climate_sbValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="12pt"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            />
+
+    </LinearLayout>
 
     <SeekBar
         android:id="@+id/climate_seekBar"
@@ -45,6 +67,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:text="참고)적정희망온도:\n여름철:24~26°C\n겨울철:20~22°C"/>
+        android:text="참고)적정희망온도:\n여름철:24~26°C\n겨울철:20~22°C" />
 
 </LinearLayout>
