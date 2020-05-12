@@ -285,6 +285,7 @@ class GetDataClimate implements Runnable {
 
             String code = "";
             String value = "";
+            String test;
             t.start();
             while ((msg = br.readLine()) != null) {
                 Message message = new Message();
