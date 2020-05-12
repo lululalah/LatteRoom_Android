@@ -90,7 +90,6 @@ public class lightActivity extends AppCompatActivity {
 
 
 
-
         SeekBar sb = (SeekBar) findViewById(R.id.lightSeekbar);
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             Thread t;

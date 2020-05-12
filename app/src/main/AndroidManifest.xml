@@ -12,8 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity android:name=".alarmActivity"></activity>
+        <activity android:name=".lightActivity" />
 
-        <activity android:name=".lightActivity"></activity>
         <activity android:name=".bedActivity" />
         <activity android:name=".climateActivity" />
 

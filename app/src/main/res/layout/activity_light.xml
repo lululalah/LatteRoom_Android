@@ -30,6 +30,7 @@
         android:max="100"
         android:min="0" />
 
+
     <Button
         android:id="@+id/lightOn"
         android:layout_width="200dp"
