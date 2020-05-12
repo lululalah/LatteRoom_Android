@@ -4,57 +4,57 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ImageButton
-            android:id="@+id/main_light"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_centerVertical="true"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/light1"
-            />
-
-
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
+
             >
-            <ImageButton
-                android:id="@+id/main_bed"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_centerVertical="true"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/bed2"/>
             <ImageButton
                 android:id="@+id/main_alarm"
                 android:layout_width="wrap_content"
-                android:layout_height="100dp"
-                android:layout_centerVertical="true"
+                android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/alarm"/>
+                app:srcCompat="@drawable/icon_alarm"
+                android:layout_weight="1"
+                android:background="@null"/>
+            <ImageButton
+                android:id="@+id/main_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/icon_light"
+                android:layout_weight="1"
+                android:background="@null"/>
+
+            <ImageButton
+                android:id="@+id/main_bed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/icon_bed"
+                android:layout_weight="1"
+                android:background="@null"/>
+
+
+
 
             <ImageButton
                 android:id="@+id/main_thermo"
                 android:layout_width="wrap_content"
-                android:layout_height="100dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/thermo1" />
+                app:srcCompat="@drawable/icon_thermo"
+                android:layout_weight="1"
+                android:background="@null"/>
         </LinearLayout>
+
 
 
     <Button
@@ -63,4 +63,5 @@
         android:id="@+id/test"
         android:text="test"/>
     </LinearLayout>
+
 </ScrollView>
