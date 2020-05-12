@@ -1,8 +1,12 @@
 package com.example.androidlatteroom;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +22,9 @@ import java.net.Socket;
 import java.util.LinkedList;
 
 public class lightActivity extends AppCompatActivity {
+
+    private static String host = "70.12.60.99";
+
     private Socket socket;
     private BufferedReader br;
     private PrintWriter pr;
@@ -63,11 +70,11 @@ public class lightActivity extends AppCompatActivity {
 
         public void send(String msg) {
             try {
-            pr.println(msg);
-            pr.flush();
+                pr.println(msg);
+                pr.flush();
 
-            }catch(Exception e){
-                Log.i("test",e.toString());
+            } catch (Exception e) {
+                Log.i("test", e.toString());
             }
 
 
@@ -85,22 +92,48 @@ public class lightActivity extends AppCompatActivity {
         final TextView lightPower = (TextView) findViewById(R.id.lightPower);
         Button onBtn = findViewById(R.id.lightOn);
         Button offBtn = findViewById(R.id.lightOff);
-
+        SeekBar sb = (SeekBar) findViewById(R.id.lightSeekbar);
         //lightPower.setText("msg");
 
+        @SuppressLint("HandlerLeak") Handler handler = new Handler() {
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+
+                if (msg.getData().getString("tmp") != null) {
+                    String power = msg.getData().getString("tmp");
+                    lightPower.setText(power + "%");
+
+                }
+                if (msg.getData().getString("On") != null) {
+                    int power = Integer.valueOf(msg.getData().getString("On"));
+
+                    sb.setProgress(power);
+                    lightPower.setText(power + "%");
+                }
+                if (msg.getData().getString("Off") != null) {
+                    //String power = msg.getData().getString("Off");
+                    sb.setProgress(0);
+                    lightPower.setText("Off");
+                }
 
 
-        SeekBar sb = (SeekBar) findViewById(R.id.lightSeekbar);
+            }
+        };
+
+
+
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             Thread t;
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 t = new Thread(() -> {
-                    shared.send(String.valueOf(progress));
+
+                    shared.send("tmp," + String.valueOf(progress));
 
                 });
-
+                t.start();
 
             }
 
@@ -111,21 +144,20 @@ public class lightActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                t.start();
+
             }
         });
 
         Thread t = new Thread(() -> {
             try {
-                socket = new Socket("70.12.60.94", 55566);
+                socket = new Socket(host, 55566);
                 br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 pr = new PrintWriter(socket.getOutputStream());
 
 
-
                 // 해당 Runnable 객체에 BufferedRead와 변경되어야 하는 컴포넌트들을 주입시킨후
                 // 해당 Runnable 객체에서 메서드를 이용하여 컴포넌트 값들의 값을 서버로 전송 or 받기.
-                GetDataLight getdataR = new GetDataLight(br,lightPower,curtmp,sb,shared);
+                GetDataLight getdataR = new GetDataLight(br, lightPower, curtmp, sb, shared, handler);
                 Thread getDataT = new Thread(getdataR);
 //                Thread getData = new Thread(() -> {
 //                    try {
@@ -171,8 +203,9 @@ public class lightActivity extends AppCompatActivity {
         onBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sb.setProgress(curtmp);
                 Thread t = new Thread(() -> {
-                    shared.send("On");
+                    shared.send("On," + curtmp);
                 });
                 t.start();
             }
@@ -181,9 +214,10 @@ public class lightActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //sb.setProgress(0);
+                curtmp = sb.getProgress();
                 lightPower.setText("0");
                 Thread t = new Thread(() -> {
-                    shared.send("Off");
+                    shared.send("Off," + curtmp);
                 });
                 t.start();
             }
@@ -236,7 +270,7 @@ public class lightActivity extends AppCompatActivity {
 //}
 
 
-class GetDataLight implements Runnable{
+class GetDataLight implements Runnable {
     private String msg;
     private String getData;
     private BufferedReader br;
@@ -244,40 +278,67 @@ class GetDataLight implements Runnable{
     private SeekBar sb;
     private Object shared;
     private int setData;
+    private Handler handler;
 
-    GetDataLight(BufferedReader br,TextView lightPower,int setData,SeekBar sb,Object shared){
+    GetDataLight(BufferedReader br, TextView lightPower, int setData, SeekBar sb, Object shared, Handler handler) {
         this.br = br;
         this.lightPower = lightPower;
         this.setData = setData;
         this.sb = sb;
         this.shared = shared;
+        this.handler = handler;
     }
 
 
     @Override
     public void run() {
         try {
-            Log.i("test","doGetData");
-            Log.i("test",String.valueOf(setData));
+            String code = "";
+            String value = "";
+
+            // Log.i("test","doGetData");
+            // Log.i("test",String.valueOf(setData));
             while ((msg = br.readLine()) != null) {
-
-                Log.i("test", "!!!!");
                 Log.i("test", msg);
-                getData = msg;
-
-
-
-                if (!"Off".equals(getData)) {
-
-                    setData = Integer.valueOf(getData);
+                Message message = new Message();
+                Bundle bundle = new Bundle();
+                if (msg.split(",").length == 2) {
+                    String[] sets = msg.split(",");
+                    code = sets[0];
+                    value = sets[1];
                 }
-                if("On".equals(getData)){
-                    //sb.setProgress(100);
-                }else if("Off".equals(getData)){
-                    Log.i("test","이전 온도"+Integer.toString(setData));
-                    sb.setProgress(0);
+                if ("tmp".equals(code)) {
+                    bundle.putString(code, value);
+                    message.setData(bundle);
+
                 }
-                lightPower.setText(msg + "`");
+                if ("Off".equals(code)) {
+                    bundle.putString(code, value);
+                    message.setData(bundle);
+                }
+                if ("On".equals(code)) {
+                    bundle.putString(code, value);
+                    message.setData(bundle);
+                }
+                handler.sendMessage(message);
+
+//                Log.i("test", "!!!!");
+//                Log.i("test", msg);
+//                getData = msg;
+//
+//
+//
+//                if (!"Off".equals(getData)) {
+//
+//                    setData = Integer.valueOf(getData);
+//                }
+//                if("On".equals(getData)){
+//                    //sb.setProgress(100);
+//                }else if("Off".equals(getData)){
+//                    Log.i("test","이전 온도"+Integer.toString(setData));
+//                    sb.setProgress(0);
+//                }
+//                lightPower.setText(msg + "`");
 
 
             }

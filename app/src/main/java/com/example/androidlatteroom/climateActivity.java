@@ -24,33 +24,35 @@ import java.util.LinkedList;
 
 public class climateActivity extends AppCompatActivity {
 
-    private Socket socket;
-    private BufferedReader br;
-    private PrintWriter pr;
 
-    class SharedObject{
-        private Object MONITOR = new Object();
-        private int i; //seekBar에서 설정한 온도
+    private static String host = "70.12.60.99";
+//    private Socket socket;
+//    private BufferedReader br;
+//    private PrintWriter pr;
 
-        SharedObject(){}
-
-        public void put(int i){
-            synchronized (MONITOR){
-                this.i=i;
-                Log.i("ArduinoTest", "공용객체에 데이터 입력");
-                MONITOR.notify();
-            }
-        }
-
-        public int pop(){
-            int result = 0;
-            synchronized (MONITOR){
-                result = this.i;
-                Log.i("ArduinoTest", "공용객체에서 데이터 추출");
-            }
-            return result;
-        }
-    }
+//    class SharedObject{
+//        private Object MONITOR = new Object();
+//        private int i; //seekBar에서 설정한 온도
+//
+//        SharedObject(){}
+//
+//        public void put(int i){
+//            synchronized (MONITOR){
+//                this.i=i;
+//                Log.i("ArduinoTest", "공용객체에 데이터 입력");
+//                MONITOR.notify();
+//            }
+//        }
+//
+//        public int pop(){
+//            int result = 0;
+//            synchronized (MONITOR){
+//                result = this.i;
+//                Log.i("ArduinoTest", "공용객체에서 데이터 추출");
+//            }
+//            return result;
+//        }
+//    }
 
     private TextView climateMSG;
     private TextView climateCondition;
@@ -65,13 +67,12 @@ public class climateActivity extends AppCompatActivity {
         private LinkedList<String> list = new LinkedList<String>();
 
         SharedObject() {
-
         } // 생성자
 
         public void put(String s) {
             synchronized (MONITOR) {
                 list.addLast(s);
-                Log.i("test", "공용객체에 데이터 입력");
+                Log.i("ArduinoTest", "공용객체에 데이터 입력");
                 // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
                 MONITOR.notify();
             }
@@ -87,13 +88,11 @@ public class climateActivity extends AppCompatActivity {
                         MONITOR.wait();
                         // 큐 구조에서 가져옴
                         result = list.removeFirst();
-                        send(result);
                     } catch (Exception e) {
                         Log.i("ArduinoTest", e.toString());
                     }
                 } else {
                     result = list.removeFirst();
-                    send(result);
                     Log.i("ArduinoTest", "공용객체에서 데이터 추출");
                 }
             }
@@ -110,12 +109,6 @@ public class climateActivity extends AppCompatActivity {
             }
 
 
-        }
-
-        public void firstSetting() {
-            while (!list.isEmpty()) {
-                list.pop();
-            }
         }
 
     }
@@ -138,9 +131,16 @@ public class climateActivity extends AppCompatActivity {
         climate_seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
-                setClimate(i);
-                climate_sbValue.append( i + "°C");
-                shared.put(i);
+                //setClimate(i);
+                //climate_sbValue.setText( i + "°C");
+
+
+                Thread t = new Thread(()->{
+
+                shared.send("hopeTmp,"+Integer.toString(i));
+                });
+                t.start();
+                //shared.put(i);
             }
 
             @Override
@@ -150,14 +150,15 @@ public class climateActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
+//        climateMSG = findViewById(R.id.climateSensorValue);
+//        climateCondition = findViewById(R.id.climateCondition);
+//        climate_status = findViewById(R.id.climate_sbValue);
+//        climate_seekBar = findViewById(R.id.climate_seekBar);
 
-        climateMSG = findViewById(R.id.climateMSG);
-        climateCondition = findViewById(R.id.climateCondition);
-        climate_status = findViewById(R.id.climate_status);
-        climate_seekBar = findViewById(R.id.climate_seekBar);
-
-        Handler handler = new Handler() {
+        @SuppressLint("HandlerLeak") Handler handler = new Handler() {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 String result = "";
@@ -166,7 +167,7 @@ public class climateActivity extends AppCompatActivity {
                     climateMSG.setText(result);
                 }
                 if ((result = msg.getData().getString("hopeTmp")) != null) {
-                    climateCondition.setText(result);
+                    climate_sbValue.setText(result + "°C");
                 }
                 if ((result = msg.getData().getString("status")) != null) {
                     climate_status.setText(result);
@@ -177,7 +178,7 @@ public class climateActivity extends AppCompatActivity {
 
         Thread t = new Thread(() -> {
             try {
-                socket = new Socket("70.12.60.94", 55566);
+                socket = new Socket(host, 55566);
                 br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 pr = new PrintWriter(socket.getOutputStream());
                 GetDataClimate runnable = new GetDataClimate(br, climateMSG, climateCondition,
@@ -192,27 +193,27 @@ public class climateActivity extends AppCompatActivity {
         t.start();
 
 
-        Runnable r = () -> {
-            try {
-                socket = new Socket("70.12.60.111", 55566);
-                br = new BufferedReader(new InputStreamReader(
-                        socket.getInputStream()));
-                pr = new PrintWriter(socket.getOutputStream());
-                Log.i("ServerTest", "서버에 접속성공");
-
-                while(true){
-                    int i = shared.pop();
-                    pr.println(i);
-                    pr.flush();
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        };
-        Thread t = new Thread(r);
-        t.start();
+//        Runnable r = () -> {
+//            try {
+//                socket = new Socket("70.12.60.111", 55566);
+//                br = new BufferedReader(new InputStreamReader(
+//                        socket.getInputStream()));
+//                pr = new PrintWriter(socket.getOutputStream());
+//                Log.i("ServerTest", "서버에 접속성공");
+//
+//                while(true){
+//                    int i = shared.pop();
+//                    pr.println(i);
+//                    pr.flush();
+//                }
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//        };
+        //Thread t = new Thread(r);
+        //t.start();
 
 
     } //end onCreate
@@ -224,7 +225,6 @@ public class climateActivity extends AppCompatActivity {
             value = 40;
         }
     }
-
 
 
 }
@@ -259,9 +259,10 @@ class GetDataClimate implements Runnable {
 
     @Override
     public void run() {
-        shared.put("curTmp,-25`");
-        shared.put("hopeTmp,25`");
-        shared.put("status,On");
+
+        //shared.put("curTmp,-25`");
+        //shared.put("hopeTmp,25`");
+        //shared.put("status,On");
 
         Thread t = new Thread(() -> {
             while (true) {
@@ -284,6 +285,7 @@ class GetDataClimate implements Runnable {
 
             String code = "";
             String value = "";
+            String test;
             t.start();
             while ((msg = br.readLine()) != null) {
                 Message message = new Message();
