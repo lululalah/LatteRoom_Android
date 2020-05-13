@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
@@ -15,6 +16,7 @@ public class alarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
 
+        Button alarm_confirm = (Button)findViewById(R.id.alarm_confirm);
         TimePicker mTimePicker = (TimePicker) findViewById(R.id.timePicker);
 
         Calendar mCalendar = Calendar.getInstance();

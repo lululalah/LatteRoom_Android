@@ -9,7 +9,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="원하는 침대각도를 설정하세요"/>
+        android:text="원하는 침대각도를 설정하세요"
+        android:fontFamily="@font/notosanskrregular"/>
 
 
         <ImageButton
@@ -18,7 +19,8 @@
             android:layout_height="120dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/bed30btn" />
+            app:srcCompat="@drawable/bed30btn"
+            android:background="@null"/>
 
         <ImageButton
             android:id="@+id/bed45btn"
@@ -26,7 +28,8 @@
             android:layout_height="120dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/bed45btn" />
+            app:srcCompat="@drawable/bed45btn"
+            android:background="@null"/>
 
         <ImageButton
             android:id="@+id/bed90btn"
@@ -34,6 +37,7 @@
             android:layout_height="120dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/bed90btn" />
+            app:srcCompat="@drawable/bed90btn"
+            android:background="@null"/>
 
 </LinearLayout>

@@ -2,32 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_horizontal"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginLeft="30dp"
+    android:layout_marginRight="30dp"
+    android:layout_marginTop="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="[온도설정]"/>
 
     <!--    현재온도는 ~도 입니다.-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="현재온도는" />
+        android:text="현재온도는"
+        android:layout_gravity="center"
+        android:textSize="10pt"/>
 
     <TextView
         android:id="@+id/climateSensorValue"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="10pt"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="°C입니다." />
+        android:text="°C입니다.\n"
+        android:textSize="10pt"/>
 
 
-    <!--    온도를 맞춰드릴게요(?)-->
-    <TextView
-        android:id="@+id/climateCondition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=" " />
+
 
     <!--    희망온도설정-->
     <LinearLayout
@@ -68,5 +74,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:text="참고)적정희망온도:\n여름철:24~26°C\n겨울철:20~22°C" />
+
+    <!--    에어컨이 작동중입니다/보일러가 작동중입니다/희망온도를 유지중입니다.-->
+    <TextView
+        android:id="@+id/climateCondition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="희망온도를 유지중입니다." />
 
 </LinearLayout>

@@ -48,18 +48,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton main_alarm = (ImageButton)findViewById(R.id.main_alarm);
-        main_alarm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent();
-                ComponentName cname = new ComponentName
-                        ("com.example.androidlatteroom",
-                                "com.example.androidlatteroom.alarmActivity");
-                i.setComponent(cname);
-                startActivity(i);
-            }
-        });
+//        ImageButton main_alarm = (ImageButton)findViewById(R.id.main_alarm);
+//        main_alarm.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent i = new Intent();
+//                ComponentName cname = new ComponentName
+//                        ("com.example.androidlatteroom",
+//                                "com.example.androidlatteroom.alarmActivity");
+//                i.setComponent(cname);
+//                startActivity(i);
+//            }
+//        });
 
         ImageButton main_thermo = (ImageButton)findViewById(R.id.main_thermo);
         main_thermo.setOnClickListener(new View.OnClickListener() {
@@ -73,17 +73,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        Button test = findViewById(R.id.test);
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent();
-                ComponentName cname = new ComponentName("com.example.androidlatteroom",
-                        "com.example.androidlatteroom.TestActivity");
-                i.setComponent(cname);
-                startActivity(i);
-            }
-        });
+//        Button test = findViewById(R.id.test);
+//        test.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent i = new Intent();
+//                ComponentName cname = new ComponentName("com.example.androidlatteroom",
+//                        "com.example.androidlatteroom.TestActivity");
+//                i.setComponent(cname);
+//                startActivity(i);
+//            }
+//        });
     }
 
     @Override
