@@ -1,20 +1,13 @@
 package com.example.androidlatteroom;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Build;
 import android.os.Bundle;
-<<<<<<< HEAD
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-=======
 import android.widget.Button;
->>>>>>> upstream/master
 import android.widget.TimePicker;
-
-
-
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -28,9 +21,6 @@ public class alarmActivity extends AppCompatActivity {
     private Socket socket;
     private BufferedReader br;
     private PrintWriter pr;
-
-
-
 
     class SharedObject {
         private Object MONITOR = new Object();

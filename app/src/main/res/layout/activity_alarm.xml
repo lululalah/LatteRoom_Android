@@ -5,16 +5,18 @@
     android:orientation="vertical"
     android:layout_gravity="center_horizontal">
 
-<TimePicker android:id="@+id/timePicker"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:timePickerMode="spinner"
-
-    xmlns:android="http://schemas.android.com/apk/res/android" />
- <Button
+ <TimePicker
+     android:id="@+id/timePicker"
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
-     android:text="확인"
-     android:id="@+id/alarm_confirm"/>
+     android:layout_centerHorizontal="true"
+     android:timePickerMode="spinner"
+
+     />
+
+ <Button
+     android:id="@+id/alarm_confirm"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:text="확인" />
 </LinearLayout>

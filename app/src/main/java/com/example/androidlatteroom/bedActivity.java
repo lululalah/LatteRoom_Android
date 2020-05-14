@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -108,20 +109,21 @@ public class bedActivity extends AppCompatActivity {
         ImageButton bed30btn = (ImageButton) findViewById(R.id.bed30btn);
         ImageButton bed45btn = (ImageButton) findViewById(R.id.bed45btn);
         ImageButton bed90btn = (ImageButton) findViewById(R.id.bed90btn);
+        //Button testBtn = findViewById(R.id.testBtn);
 
-        Button testBtn = findViewById(R.id.testBtn);
-        testBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                DeviceSettingService.getDevice();
-//                com.example.androidlatteroom.Message msg =
-//                        DeviceSettingService.makeMessage("bed","degree");
-//                Log.i("test","---------------");
-//                Log.i("test",msg.getDeviceID());
-//                Log.i("test",msg.getDataType());
-//                Log.i("test",msg.getJsonData());
-            }
-        });
+//        //testBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                DeviceSettingService.getDevice();
+////                com.example.androidlatteroom.Message msg =
+////                        DeviceSettingService.makeMessage("bed","degree");
+////                Log.i("test","---------------");
+////                Log.i("test",msg.getDeviceID());
+////                Log.i("test",msg.getDataType());
+////                Log.i("test",msg.getJsonData());
+//   //             Toast.makeText(this,"각도를 저장하겠습니다",Toast.LENGTH_LONG).show();
+//            }
+//        });
 
         final TextView bedSetting = findViewById(R.id.bedSetting);
         bed30btn.setOnClickListener((v)->{

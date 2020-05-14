@@ -79,11 +79,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-<<<<<<< HEAD
-        //Button test = findViewById(R.id.test);
-=======
-//        Button test = findViewById(R.id.test);
->>>>>>> upstream/master
+
+//Button test = findViewById(R.id.test);
 //        test.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
