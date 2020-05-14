@@ -93,18 +93,18 @@
                 android:layout_weight="1"
                 android:background="@null"/>
         </LinearLayout>
-<<<<<<< HEAD
+<!--<<<<<<< HEAD-->
 
 
 
-<!--    <Button-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:id="@+id/test"-->
-<!--        android:text="test"/>-->
-<!--    </LinearLayout>-->
+<!--&lt;!&ndash;    <Button&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/test"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:text="test"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </LinearLayout>&ndash;&gt;-->
 
-=======
+<!--=======-->
     </LinearLayout>
->>>>>>> upstream/master
+<!--&gt;>>>>>> upstream/master-->
 </ScrollView>

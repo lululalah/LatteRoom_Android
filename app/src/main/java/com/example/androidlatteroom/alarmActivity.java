@@ -4,13 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Build;
 import android.os.Bundle;
-<<<<<<< HEAD
+//<<<<<<< HEAD
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-=======
+//=======
 import android.widget.Button;
->>>>>>> upstream/master
+//>>>>>>> upstream/master
 import android.widget.TimePicker;
 
 

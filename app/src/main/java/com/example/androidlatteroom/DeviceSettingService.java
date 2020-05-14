@@ -8,11 +8,13 @@ import android.util.Log;
 import java.sql.Date;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class DeviceSettingService extends Service {
@@ -40,9 +42,9 @@ public class DeviceSettingService extends Service {
         return new LatteMessage(data);
     }
 
-    public static LatteMessage makeRequestMsg(String sensorId){
-        return new LatteMessage(sensorId);
-    }
+//    public static LatteMessage makeRequestMsg(String sensorId){
+//        return new LatteMessage(sensorId);
+//    }
 
     public static LatteMessage makeAlertMsg(Alert data){
         return new LatteMessage(data);
@@ -62,75 +64,6 @@ public class DeviceSettingService extends Service {
 
 
 }
-
-class LatteMessage {
-    private String deviceID;
-    private String voType;
-    private String jsonData;
-    private static Gson gson = new Gson();
-
-
-    // constructor
-    private LatteMessage() {
-        // 나중에 추가
-        this.deviceID = "Android01";
-    }
-
-    public LatteMessage(SensorData data) {
-        this();
-        this.voType = "SensorData";
-        this.jsonData = LatteMessage.gson.toJson(data);
-    }
-
-    public LatteMessage(Alert data) {
-        this();
-        this.voType = "Alert";
-        this.jsonData = LatteMessage.gson.toJson(data);
-    }
-
-    public LatteMessage(String sensorId) {
-        this();
-        this.voType = "Request";
-        this.jsonData = sensorId;
-    }
-
-
-    // get, set method
-    public String getDeviceID() {
-        return deviceID;
-    }
-
-    public void setDeviceID(String deviceID) {
-        this.deviceID = deviceID;
-    }
-
-    public String getVoType() {
-        return voType;
-    }
-
-    public void setVoType(String voType) {
-        this.voType = voType;
-    }
-
-    public String getJsonData() {
-        return jsonData;
-    }
-
-    public void setJsonData(String jsonData) {
-        this.jsonData = jsonData;
-    }
-
-    @Override
-    public String toString() {
-        return "Message [deviceID=" + deviceID + ", voType=" + voType + ", jsonData=" + jsonData + "]";
-    }
-
-
-
-
-}
-
-
 class Alert {
     private String deviceID;
     private int hour;           // 시간
@@ -141,8 +74,7 @@ class Alert {
 
     // constructor
     private Alert() {
-        this.deviceID = DeviceSettingService.device;
-
+        this.deviceID = "Android01";
     }
 
     public Alert(int hour, int min, String weeks, boolean flag) {
@@ -197,9 +129,75 @@ class Alert {
 
 }
 
-
-class Sensor {
+class LatteMessage {
     private String deviceID;
+    private String voType;
+    private String jsonData;
+    private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+
+
+    // constructor
+    private LatteMessage() {
+        this.deviceID = "Android01";
+    }
+
+    public LatteMessage(SensorData data) {
+        this();
+        this.voType = "SensorData";
+        this.jsonData = LatteMessage.gson.toJson(data);
+    }
+
+    public LatteMessage(Alert data) {
+        this();
+        this.voType = "Alert";
+        this.jsonData = LatteMessage.gson.toJson(data);
+    }
+
+    public LatteMessage(String states, String stateDetail) {
+        this();
+        this.voType = "Request";
+        this.jsonData = LatteMessage.gson.toJson(new SensorData(states, stateDetail));
+    }
+    public LatteMessage(String SensorId) {
+        this();
+        this.voType = "Request";
+        this.jsonData = SensorId;
+    }
+
+    // get, set method
+    public String getDeviceID() {
+        return deviceID;
+    }
+
+    public void setDeviceID(String deviceID) {
+        this.deviceID = deviceID;
+    }
+
+    public String getVoType() {
+        return voType;
+    }
+
+    public void setVoType(String voType) {
+        this.voType = voType;
+    }
+
+    public String getJsonData() {
+        return jsonData;
+    }
+
+    public void setJsonData(String jsonData) {
+        this.jsonData = jsonData;
+    }
+
+    @Override
+    public String toString() {
+        return "Message [deviceID=" + deviceID + ", voType=" + voType + ", jsonData=" + jsonData + "]";
+    }
+
+}
+class Sensor {
+
+    private String deviceID = "Android01";
     private String sensorID = "" + this.hashCode();
     private String sensorType;
     private SensorData recentData;
@@ -209,13 +207,12 @@ class Sensor {
     public Sensor(String sensorType) {
         this.sensorType = sensorType;
     }
+//
+//    public Sensor(LatteBaseClient device, String sensorType) {
+//        this.deviceID = LatteBaseClient.getDeviceId();
+//        this.sensorType = sensorType;
+//    }
 
-/*
-    public Sensor(String deviceID,String sensorType) {
-        this.deviceID = deviceID;
-        this.sensorType = sensorType;
-    }
-*/
 
     // custom method
     public String getStates() {
@@ -278,8 +275,6 @@ class Sensor {
     }
 
 }
-
-
 class SensorData {
     private int dataID;
     private String sensorID;
@@ -347,4 +342,16 @@ class SensorData {
         this.stateDetail = stateDetail;
     }
 
+    @Override
+    public String toString() {
+        return "SensorData{" +
+                "dataID=" + dataID +
+                ", sensorID='" + sensorID + '\'' +
+                ", time=" + time +
+                ", states='" + states + '\'' +
+                ", stateDetail='" + stateDetail + '\'' +
+                '}';
+    }
 }
+
+

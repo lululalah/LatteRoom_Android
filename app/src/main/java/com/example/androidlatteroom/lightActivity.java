@@ -14,6 +14,9 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,6 +33,8 @@ public class lightActivity extends AppCompatActivity {
     private PrintWriter pr;
     private String curTmp = "";
     private int curtmp = 0;
+    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+   // Gson gson = new Gson();
 
     class SharedObject {
         private Object MONITOR = new Object();
@@ -79,6 +84,19 @@ public class lightActivity extends AppCompatActivity {
 
 
         }
+        public void send(LatteMessage msg) {
+
+                try {
+                    String temp = gson.toJson(msg);
+                    pr.println(temp);
+                    pr.flush();
+
+                } catch (Exception e) {
+                    Log.i("test", e.toString());
+                }
+
+
+        }
 
     }
 
@@ -112,17 +130,19 @@ public class lightActivity extends AppCompatActivity {
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
 
-                if (msg.getData().getString("tmp") != null) {
-                    String power = msg.getData().getString("tmp");
-                    lightPower.setText(power + "%");
+//                if (msg.getData().getString("tmp") != null) {
+//                    String power = msg.getData().getString("tmp");
+//                    lightPower.setText(power + "%");
+//
+//                }
 
-                }
                 if (msg.getData().getString("On") != null) {
                     int power = Integer.valueOf(msg.getData().getString("On"));
 
                     sb.setProgress(power);
                     lightPower.setText(power + "%");
                 }
+
                 if (msg.getData().getString("Off") != null) {
                     //String power = msg.getData().getString("Off");
                     sb.setProgress(0);
@@ -142,10 +162,15 @@ public class lightActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 t = new Thread(() -> {
 
-                    shared.send("tmp," + String.valueOf(progress));
+//                    shared.send("tmp," + String.valueOf(progress));
+                    SensorData data = new SensorData("LightPower","On",Integer.toString(progress));
+                    LatteMessage msg = new LatteMessage(data);
+                    Log.i("repeat",msg.toString());
+                    shared.send(msg);
 
                 });
-                t.start();
+
+
 
             }
 
@@ -156,7 +181,7 @@ public class lightActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                t.start();
             }
         });
 
@@ -217,7 +242,13 @@ public class lightActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sb.setProgress(curtmp);
                 Thread t = new Thread(() -> {
-                    shared.send("On," + curtmp);
+
+                    SensorData data = new SensorData("LightPower","On",Integer.toString(curtmp));
+                    LatteMessage msg = new LatteMessage(data);
+                    shared.send(msg);
+
+
+//                    shared.send("On," + curtmp);
                 });
                 t.start();
             }
@@ -229,7 +260,10 @@ public class lightActivity extends AppCompatActivity {
                 curtmp = sb.getProgress();
                 lightPower.setText("0");
                 Thread t = new Thread(() -> {
-                    shared.send("Off," + curtmp);
+                    SensorData data = new SensorData("LightPower","Off",Integer.toString(curtmp));
+                    LatteMessage msg = new LatteMessage(data);
+                    shared.send(msg);
+                    //shared.send("Off," + curtmp);
                 });
                 t.start();
             }
@@ -292,6 +326,8 @@ class GetDataLight implements Runnable {
 //    private int setData;
     private Handler handler;
 
+    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+//    Gson gson = new Gson();
     GetDataLight(BufferedReader br, Object shared, Handler handler) {
         this.br = br;
 //        this.lightPower = lightPower;
@@ -310,15 +346,28 @@ class GetDataLight implements Runnable {
 
             // Log.i("test","doGetData");
             // Log.i("test",String.valueOf(setData));
+
             while ((msg = br.readLine()) != null) {
                 Log.i("test", msg);
                 Message message = new Message();
                 Bundle bundle = new Bundle();
-                if (msg.split(",").length == 2) {
-                    String[] sets = msg.split(",");
-                    code = sets[0];
-                    value = sets[1];
-                }
+
+
+
+//                if (msg.split(",").length == 2) {
+//                    String[] sets = msg.split(",");
+//                    code = sets[0];
+//                    value = sets[1];
+//                }
+
+                LatteMessage tempMsg = gson.fromJson(msg,LatteMessage.class);
+                Log.i("test",tempMsg.getJsonData());
+                SensorData sensorData = gson.fromJson(tempMsg.getJsonData(),SensorData.class);
+
+                code = sensorData.getStates();
+                value = sensorData.getStateDetail();
+
+
                 if ("tmp".equals(code)) {
                     bundle.putString(code, value);
                     message.setData(bundle);
