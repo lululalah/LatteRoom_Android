@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -112,6 +113,9 @@ public class bedActivity extends AppCompatActivity {
         ImageButton bed90btn = (ImageButton) findViewById(R.id.bed90btn);
 //        Button testBtn = findViewById(R.id.testBtn);
 //        testBtn.setOnClickListener(new View.OnClickListener() {
+        //Button testBtn = findViewById(R.id.testBtn);
+
+//        //testBtn.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
 ////                DeviceSettingService.getDevice();
@@ -121,6 +125,7 @@ public class bedActivity extends AppCompatActivity {
 ////                Log.i("test",msg.getDeviceID());
 ////                Log.i("test",msg.getDataType());
 ////                Log.i("test",msg.getJsonData());
+//   //             Toast.makeText(this,"각도를 저장하겠습니다",Toast.LENGTH_LONG).show();
 //            }
 //        });
 

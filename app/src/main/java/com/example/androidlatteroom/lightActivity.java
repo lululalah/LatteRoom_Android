@@ -113,18 +113,18 @@ public class lightActivity extends AppCompatActivity {
         SeekBar sb = (SeekBar) findViewById(R.id.lightSeekbar);
         //lightPower.setText("msg");
 
-        Button testBtn = findViewById(R.id.light_msgTest);
-        testBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                com.example.androidlatteroom.Message msg =
-//                        DeviceSettingService.makeMessage("light","power,20%");
-//                Log.i("test","---------------");
-//                Log.i("test",msg.getDeviceID());
-//                Log.i("test",msg.getDataType());
-//                Log.i("test",msg.getJsonData());
-            }
-        });
+//        Button testBtn = findViewById(R.id.light_msgTest);
+//        testBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                com.example.androidlatteroom.Message msg =
+////                        DeviceSettingService.makeMessage("light","power,20%");
+////                Log.i("test","---------------");
+////                Log.i("test",msg.getDeviceID());
+////                Log.i("test",msg.getDataType());
+////                Log.i("test",msg.getJsonData());
+//            }
+//        });
         @SuppressLint("HandlerLeak") Handler handler = new Handler() {
             @Override
             public void handleMessage(@NonNull Message msg) {
