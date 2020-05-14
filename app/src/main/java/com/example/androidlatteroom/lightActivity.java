@@ -95,6 +95,18 @@ public class lightActivity extends AppCompatActivity {
         SeekBar sb = (SeekBar) findViewById(R.id.lightSeekbar);
         //lightPower.setText("msg");
 
+        Button testBtn = findViewById(R.id.light_msgTest);
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                com.example.androidlatteroom.Message msg =
+//                        DeviceSettingService.makeMessage("light","power,20%");
+//                Log.i("test","---------------");
+//                Log.i("test",msg.getDeviceID());
+//                Log.i("test",msg.getDataType());
+//                Log.i("test",msg.getJsonData());
+            }
+        });
         @SuppressLint("HandlerLeak") Handler handler = new Handler() {
             @Override
             public void handleMessage(@NonNull Message msg) {
@@ -157,7 +169,7 @@ public class lightActivity extends AppCompatActivity {
 
                 // 해당 Runnable 객체에 BufferedRead와 변경되어야 하는 컴포넌트들을 주입시킨후
                 // 해당 Runnable 객체에서 메서드를 이용하여 컴포넌트 값들의 값을 서버로 전송 or 받기.
-                GetDataLight getdataR = new GetDataLight(br, lightPower, curtmp, sb, shared, handler);
+                GetDataLight getdataR = new GetDataLight(br, shared, handler);
                 Thread getDataT = new Thread(getdataR);
 //                Thread getData = new Thread(() -> {
 //                    try {
@@ -272,19 +284,19 @@ public class lightActivity extends AppCompatActivity {
 
 class GetDataLight implements Runnable {
     private String msg;
-    private String getData;
+//    private String getData;
     private BufferedReader br;
-    private TextView lightPower;
-    private SeekBar sb;
+//    private TextView lightPower;
+//    private SeekBar sb;
     private Object shared;
-    private int setData;
+//    private int setData;
     private Handler handler;
 
-    GetDataLight(BufferedReader br, TextView lightPower, int setData, SeekBar sb, Object shared, Handler handler) {
+    GetDataLight(BufferedReader br, Object shared, Handler handler) {
         this.br = br;
-        this.lightPower = lightPower;
-        this.setData = setData;
-        this.sb = sb;
+//        this.lightPower = lightPower;
+//        this.setData = setData;
+//        this.sb = sb;
         this.shared = shared;
         this.handler = handler;
     }

@@ -1,18 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
+        android:orientation="horizontal">
+=======
         android:text="원하는 침대각도를 설정하세요"
         android:fontFamily="@font/notosanskrregular"/>
+>>>>>>> upstream/master
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="원하는 침대각도를 설정하세요"
+            android:layout_weight="1"/>
 
+<<<<<<< HEAD
+        <TextView
+            android:id="@+id/bedSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:paddingTop="10pt">
+    <ImageButton
+        android:id="@+id/bed30btn"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/bed30btn" />
+
+    <ImageButton
+        android:id="@+id/bed45btn"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/bed45btn" />
+
+    <ImageButton
+        android:id="@+id/bed90btn"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/bed90btn" />
+    </LinearLayout>
+=======
         <ImageButton
             android:id="@+id/bed30btn"
             android:layout_width="120dp"
@@ -39,5 +88,12 @@
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/bed90btn"
             android:background="@null"/>
+>>>>>>> upstream/master
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/testBtn"
+        android:text="test"
+        />
 </LinearLayout>

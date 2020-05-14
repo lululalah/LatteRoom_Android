@@ -22,6 +22,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent serviceI = new Intent(getApplicationContext(),DeviceSettingService.class);
+        startService(serviceI);
+
+
+
+
         ImageButton main_light = (ImageButton)findViewById(R.id.main_light);
         main_light.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +79,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+<<<<<<< HEAD
+        //Button test = findViewById(R.id.test);
+=======
 //        Button test = findViewById(R.id.test);
+>>>>>>> upstream/master
 //        test.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

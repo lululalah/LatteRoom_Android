@@ -26,7 +26,7 @@ import java.util.LinkedList;
 
 public class climateActivity extends AppCompatActivity {
 
-
+    Gson gson = new Gson();
     private static String host = "70.12.60.99";
 //    private Socket socket;
 //    private BufferedReader br;
@@ -109,8 +109,16 @@ public class climateActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Log.i("test", e.toString());
             }
+        }
 
+        public void send(LatteMessage msg) {
+            try {
+                pr.println(gson.toJson(msg));
+                pr.flush();
 
+            } catch (Exception e) {
+                Log.i("test", e.toString());
+            }
         }
 
         public void connectServer() {
@@ -161,6 +169,7 @@ public class climateActivity extends AppCompatActivity {
                     String code = "hopeTmp";
                     String value = Integer.toString(progress);
                     shared.send("hopeTmp," + Integer.toString(progress));
+
                     //Json 문자열로 변환
 //                    sendMsg msg = new sendMsg(code,value);
 //                    Log.i("test",msg.makeJson());
@@ -209,15 +218,16 @@ public class climateActivity extends AppCompatActivity {
                 socket = new Socket(host, 55566);
                 br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 pr = new PrintWriter(socket.getOutputStream());
-                GetDataClimate runnable = new GetDataClimate(br, climateMSG, climateCondition,
-                        climate_status, climate_seekBar, shared, handler);
+                GetDataClimate runnable = new GetDataClimate(br, shared, handler);
                 Thread getData = new Thread(runnable);
                 getData.start();
-                shared.connectServer();
-                shared.checkDeviceState();
+
+                shared.send(new LatteMessage("ClimateSensor"));
+
             } catch (IOException e) {
                 Log.i("test", e.toString());
             }
+
         });
         t.start();
 
@@ -264,47 +274,30 @@ class GetDataClimate implements Runnable {
     private String getData;
     private BufferedReader br;
     //    private PrintWriter pr;
-    private TextView climateMSG;
-    private TextView climateCondition;
-    private TextView climate_status;
-    private SeekBar climate_seekBar;
+//    private TextView climateMSG;
+//    private TextView climateCondition;
+//    private TextView climate_status;
+//    private SeekBar climate_seekBar;
     private Handler handler;
     private climateActivity.SharedObject shared;
 
-    GetDataClimate(BufferedReader br, TextView climateMSG,
-                   TextView climateCondition, TextView climate_status,
-                   SeekBar climate_seekBar, climateActivity.SharedObject shared, Handler handler) {
+    GetDataClimate(BufferedReader br,
+                    climateActivity.SharedObject shared, Handler handler) {
         this.br = br;
 //        this.pr = pr;
-        this.climateMSG = climateMSG;
-        this.climateCondition = climateCondition;
-        this.climate_status = climate_status;
-        this.climate_seekBar = climate_seekBar;
+//        this.climateMSG = climateMSG;
+//        this.climateCondition = climateCondition;
+//        this.climate_status = climate_status;
+//        this.climate_seekBar = climate_seekBar;
         this.shared = shared;
         this.handler = handler;
 
     }
-
+    Gson gson  = new Gson();
 
     @Override
     public void run() {
 
-        //shared.put("curTmp,27°C");
-        //shared.put("hopeTmp,25`");
-        //shared.put("status,On");
-
-//        Thread t = new Thread(() -> {
-//
-//
-//                shared.pop();
-//
-//            }
-//
-//        );
-
-//        pr.println();
-//        pr.flush();
-        //shared.send("this");
         try {
 
 
@@ -313,57 +306,21 @@ class GetDataClimate implements Runnable {
             String test;
 
             while ((msg = br.readLine()) != null) {
-
                 Message message = new Message();
-
                 Bundle bundle = new Bundle();
-//                bundle.putString("msg",msg);
-//                message.setData(bundle);
-//                handler.sendMessage(message);
-//                    handler.post(()->{
-//
-//                        climateMSG.setText(msg);
-//                    });
-                Log.i("test", msg);
+
+                LatteMessage msgJson = gson.fromJson(msg,LatteMessage.class);
+
+
+                Log.i("json", msgJson.getJsonData());
 
                 if (msg.split(",").length == 2) {
                     code = msg.split(",")[0];
                     value = msg.split(",")[1];
                 }
-                //현재온도가 들어오면
-                if ("curTmp".equals(code)) {
-                    bundle.putString("curTmp", value);
-                    message.setData(bundle);
-//                    handler.sendMessage(message);
-//                    handler.post(()->{
-//
-//                        climateMSG.setText(msg);
-//                    });
-//                    climateMSG.setText(value);
-                }
-                if ("hopeTmp".equals(code)) {
-                    bundle.putString("hopeTmp", value);
-                    message.setData(bundle);
-//                    handler.sendMessage(message);
-//                    handler.post(()->{
-//
-//                    climateCondition.setText(msg);
-//                    });
-                }
-                if ("status".equals(code)) {
-                    bundle.putString("status", value);
-                    message.setData(bundle);
-//                    handler.sendMessage(message);
-//                    handler.post(()->{
-//
-//                        climate_status.setText(msg);
-//                    });
 
-                }
-                if ("check".equals(code)) {
-                    bundle.putString("deviceStatus", value);
-                    message.setData(bundle);
-                }
+
+
 
                 handler.sendMessage(message);
 
