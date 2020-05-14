@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class bedActivity extends AppCompatActivity {
     class SharedObject {
         private Object MONITOR = new Object();
         private LinkedList<String> list = new LinkedList<String>();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
         SharedObject() {
         } // 생성자
 
@@ -83,6 +84,7 @@ public class bedActivity extends AppCompatActivity {
 
         }
         public void send(LatteMessage msg) {
+
             try {
                 String temp = gson.toJson(msg);
                 pr.println(temp);
@@ -109,6 +111,8 @@ public class bedActivity extends AppCompatActivity {
         ImageButton bed30btn = (ImageButton) findViewById(R.id.bed30btn);
         ImageButton bed45btn = (ImageButton) findViewById(R.id.bed45btn);
         ImageButton bed90btn = (ImageButton) findViewById(R.id.bed90btn);
+//        Button testBtn = findViewById(R.id.testBtn);
+//        testBtn.setOnClickListener(new View.OnClickListener() {
         //Button testBtn = findViewById(R.id.testBtn);
 
 //        //testBtn.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +133,7 @@ public class bedActivity extends AppCompatActivity {
         bed30btn.setOnClickListener((v)->{
             Thread t = new Thread(()->{
 
-                SensorData data = new SensorData("bedMotor","On","30");
+                SensorData data = new SensorData("BedMotor","On","30");
                 LatteMessage msg = new LatteMessage(data);
                 shared.send(msg);
 
@@ -158,7 +162,7 @@ public class bedActivity extends AppCompatActivity {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 String result = "";
-
+                Log.i("test","handler");
                 // 로직 처리 예시
                  if ((result = msg.getData().getString("BedDeg")) != null) {
                      bedSetting.setText(result + "°");
@@ -180,6 +184,10 @@ public class bedActivity extends AppCompatActivity {
                 br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 pr = new PrintWriter(socket.getOutputStream());
                 // 서버에서 계속 받아오는 Thread
+//                LatteMessage sensorId = new LatteMessage("BedMotor");
+//                shared.send(sensorId);
+
+
                 GetDataBed runnable = new GetDataBed(br, shared, handler);
                 Thread getData = new Thread(runnable);
                 getData.start();
@@ -209,8 +217,10 @@ class GetDataBed implements Runnable {
         this.br = br;
         this.shared = shared;
         this.handler = handler;
+
+
     }
-    Gson gson  = new Gson();
+    Gson gson  = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 
 
     @Override
@@ -226,22 +236,24 @@ class GetDataBed implements Runnable {
 
                 Message message = new Message();
                 Bundle bundle = new Bundle();
-                Log.i("test", msg);
+                Log.i("test", msg+"@@이로그");
+//                if(gson.fromJson(msg,LatteMessage.class)!=null) {
+                    LatteMessage msgJson = gson.fromJson(msg, LatteMessage.class);
 
-                LatteMessage msgJson = gson.fromJson(msg,LatteMessage.class);
-
-
+                    Log.i("msgJson", msgJson.toString());
+                    SensorData sensordata = gson.fromJson(msgJson.getJsonData(), SensorData.class);
+                    Log.i("sensordata", sensordata.toString());
 
 //                Log.i("test", msg);
 //                Log.i("json", Msgjson.getJsonData());
-                SensorData sensordata =gson.fromJson(msgJson.getJsonData(), SensorData.class);
+//                SensorData sensordata =gson.fromJson(msgJson.getJsonData(), SensorData.class);
+                    Log.i("test", sensordata.getStateDetail());
 
 
-
-                if("On".equals(sensordata.getStates())){
-                    bundle.putString("BedDeg",sensordata.getStateDetail());
-                    message.setData(bundle);
-                }
+                    if ("On".equals(sensordata.getStates())) {
+                        bundle.putString("BedDeg", sensordata.getStateDetail());
+                        message.setData(bundle);
+                    }
 
 //                // 추후 Gson 을 이용하여 받아온 json을 풀어쓰는 형태로 바꿀 예정.
 //                if (msg.split(",").length == 2) {
@@ -255,8 +267,9 @@ class GetDataBed implements Runnable {
 //                }
 
 
-                handler.sendMessage(message);
-            }
+                    handler.sendMessage(message);
+                }
+//            }
         } catch (Exception e) {
             Log.i("test", e.toString());
         }

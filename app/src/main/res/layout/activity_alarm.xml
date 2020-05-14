@@ -2,21 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:layout_gravity="center_horizontal">
+    android:textAlignment="center">
 
- <TimePicker
-     android:id="@+id/timePicker"
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"
-     android:layout_centerHorizontal="true"
-     android:timePickerMode="spinner"
+<!--<<<<<<< HEAD-->
+    <TimePicker xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/timePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
 
-     />
+        android:timePickerMode="spinner" />
 
- <Button
-     android:id="@+id/alarm_confirm"
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"
-     android:text="확인" />
+    <Button
+        android:id="@+id/alarm_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="확인" />
+<!--=======-->
+<!-- <TimePicker-->
+<!--     android:id="@+id/timePicker"-->
+<!--     android:layout_width="wrap_content"-->
+<!--     android:layout_height="wrap_content"-->
+<!--     android:layout_centerHorizontal="true"-->
+<!--     android:timePickerMode="spinner"-->
+
+<!--     />-->
+
+<!-- <Button-->
+<!--     android:id="@+id/alarm_confirm"-->
+<!--     android:layout_width="wrap_content"-->
+<!--     android:layout_height="wrap_content"-->
+<!--     android:text="확인" />-->
+<!--&gt;>>>>>> upstream/master-->
 </LinearLayout>

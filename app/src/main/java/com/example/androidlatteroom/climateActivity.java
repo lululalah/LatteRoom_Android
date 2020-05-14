@@ -14,6 +14,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +27,8 @@ import java.util.LinkedList;
 
 public class climateActivity extends AppCompatActivity {
 
-    Gson gson = new Gson();
+    //Gson gson = new Gson();
+    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
     private static String host = "70.12.60.99";
 //    private Socket socket;
 //    private BufferedReader br;
@@ -222,7 +224,7 @@ public class climateActivity extends AppCompatActivity {
                 Thread getData = new Thread(runnable);
                 getData.start();
 
-                shared.send(new LatteMessage("ClimateSensor"));
+                //shared.send(new LatteMessage("ClimateSensor"));
 
             } catch (IOException e) {
                 Log.i("test", e.toString());
@@ -293,8 +295,8 @@ class GetDataClimate implements Runnable {
         this.handler = handler;
 
     }
-    Gson gson  = new Gson();
-
+    //Gson gson  = new Gson();
+    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
     @Override
     public void run() {
 
