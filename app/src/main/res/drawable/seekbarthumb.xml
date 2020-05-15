@@ -5,11 +5,11 @@
     android:useLevel="false"  >
     <!-- 배경 -->
     <solid
-        android:color="@color/colorLightMint"/>
+        android:color="@color/colorPrimary"/>
     <!-- 테두리 -->
     <stroke
         android:width="2dp"
-        android:color="@color/colorPrimaryDark" />
+        android:color="@color/colorBeige" />
     <!-- 크기 -->
     <size
         android:width="13dp"

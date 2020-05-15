@@ -85,7 +85,7 @@ public class alarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
 
-        Button alarm_confirm = (Button)findViewById(R.id.alarm_confirm);
+        //Button alarm_confirm = (Button)findViewById(R.id.alarm_confirm);
         TimePicker mTimePicker = (TimePicker) findViewById(R.id.timePicker);
 
         Calendar mCalendar = Calendar.getInstance();

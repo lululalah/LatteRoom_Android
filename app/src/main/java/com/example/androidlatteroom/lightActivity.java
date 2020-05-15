@@ -146,7 +146,7 @@ public class lightActivity extends AppCompatActivity {
                 if (msg.getData().getString("Off") != null) {
                     //String power = msg.getData().getString("Off");
                     sb.setProgress(0);
-                    lightPower.setText("Off");
+                    lightPower.setText("ON");
                 }
 
 
