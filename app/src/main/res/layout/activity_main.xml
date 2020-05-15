@@ -5,16 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--    <LinearLayout-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:background="@drawable/background">-->
-    <!--        <TextView-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="1"/>-->
-    <!--    </LinearLayout>-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,29 +12,6 @@
         android:addStatesFromChildren="false"
         android:orientation="vertical">
 
-        <!-- 현재 온도, 날짜 습도(그림 위로)-->
-        <!--        <TextView-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:textSize="50pt" />-->
-
-<!--<<<<<<< HEAD-->
-
-        <!--        <LinearLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:background="@drawable/background"-->
-        <!--            android:orientation="vertical">-->
-
-        <!--        <ImageView-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="300dp"-->
-        <!--            android:scaleType="fitXY"-->
-        <!--            android:src="@drawable/background">-->
-
-
-        <!--        </ImageView>-->
-        <!--        </LinearLayout>-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="300dp"
@@ -60,7 +27,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginRight="10pt">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -72,25 +40,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:background="#80ffffff">
 
                     <TextView
                         android:id="@+id/mainTemperature"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="25ºC" />
+                        android:text="25°C"
+                        android:textSize="15pt"
+                        android:gravity="right"
+                        />
 
                     <TextView
                         android:id="@+id/mainDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="2020.05.13(화)" />
+                        android:text="2020.05.13(화)"
+                        android:textSize="15pt"
+                        android:gravity="right"/>
 
                     <TextView
                         android:id="@+id/mainHumidity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="33%" />
+                        android:text="33%"
+                        android:textSize="15pt"
+                        android:gravity="right"/>
 
                 </LinearLayout>
 
@@ -101,26 +77,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginRight="10pt"
+                >
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="6" />
-                <ImageButton
-                    android:layout_width="10pt"
-                    android:layout_height="10pt"
-                    android:src="@drawable/icon_alarm_on"
-                    android:layout_weight="1"
-                    android:id="@+id/AlarmIcon"
+                    android:layout_weight="6"
                     />
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="알람시간 : 1010"
-                    android:id="@+id/AlarmActivity"/>
+                    android:background="#80ffffff"
+                    >
 
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="15pt"
+                    android:layout_weight="1"
+                    android:text="AM 06:30"
+                    android:id="@+id/AlarmActivity"
+                    android:textSize="10pt"
+                    android:gravity="center"
+                    />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="15pt"
+                    android:id="@+id/AlarmSwitch"
+                    android:track="@drawable/switch_track_selector"
+                    android:thumb="@drawable/switch_thumb"
+                    android:layout_marginRight="5pt"/>
+                 </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceI = new Intent(getApplicationContext(),DeviceSettingService.class);
         startService(serviceI);
 
-//<<<<<<< HEAD
+
 
         @SuppressLint("HandlerLeak") Handler handler = new Handler(){
             @Override
@@ -191,15 +191,6 @@ public class MainActivity extends AppCompatActivity {
                                 Log.i("Exception",e2.toString());
                             }
 
-//
-//=======
-////        ImageView viewImg = findViewById(R.id.main_background);
-////        DisplayMetrics metrics = new DisplayMetrics();
-////        WindowManager manager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-////        manager.getDefaultDisplay().getMetrics(metrics);
-////        ViewGroup.LayoutParams param = viewImg.getLayoutParams();
-////        viewImg.setMaxHeight((int) (metrics.heightPixels*0.1)); //50%
-//>>>>>>> upstream/master
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -244,18 +235,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        ImageButton main_alarm = (ImageButton)findViewById(R.id.alarm_confirm);
-//        main_alarm.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent i = new Intent();
-//                ComponentName cname = new ComponentName
-//                        ("com.example.androidlatteroom",
-//                                "com.example.androidlatteroom.alarmActivity");
-//                i.setComponent(cname);
-//                startActivity(i);
-//            }
-//        });
 
         ImageButton main_thermo = (ImageButton)findViewById(R.id.main_thermo);
         main_thermo.setOnClickListener(new View.OnClickListener() {
@@ -270,18 +249,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//         ImageButton main_exit = (ImageButton)findViewById(R.id.main_exit);
-//        main_exit.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent i = new Intent();
-//                ComponentName cname = new ComponentName
-//                        ("com.example.androidlatteroom",
-//                                "com.example.androidlatteroom.alarmActivity");
-//                i.setComponent(cname);
-//                startActivity(i);
-//            }
-//        });
 
         final TextView AlarmActivity = findViewById(R.id.AlarmActivity);
         AlarmActivity.setOnClickListener(new View.OnClickListener() {
@@ -296,7 +263,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton AlarmIcon = findViewById(R.id.AlarmIcon);
+/*
+* // 스위치 버튼입니다.
+        SwitchButton switchButton = (SwitchButton) findViewById(R.id.AlarmSwitch);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+           // 스위치 버튼이 체크되었는지 검사하여 텍스트뷰에 각 경우에 맞게 출력합니다.
+                if (isChecked){
+                   // 알람켜기
+
+                }else{
+                   // 알람끄기
+
+                }
+            }
+        });
+* */
 
     }
 

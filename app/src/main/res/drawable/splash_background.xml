@@ -7,7 +7,7 @@
         android:bottom="200dp">
 <!--        android:gravity="fill_horizontal"-->
         <bitmap android:src="@drawable/latteroom_logo_white"
-             android:gravity="fill"
+             android:gravity="center"
             />
 <!--        android:gravity="center"-->
     </item>
