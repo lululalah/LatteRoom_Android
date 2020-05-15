@@ -63,6 +63,7 @@
         android:layout_height="wrap_content"
         android:max="40"
         android:min="10"
+        android:progress="20"
         android:thumb="@drawable/seekbarthumb"
         android:progressDrawable="@drawable/seekbardesign"/>
 

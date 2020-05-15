@@ -5,9 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,7 +30,12 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceI = new Intent(getApplicationContext(),DeviceSettingService.class);
         startService(serviceI);
 
-
+//        ImageView viewImg = findViewById(R.id.main_background);
+//        DisplayMetrics metrics = new DisplayMetrics();
+//        WindowManager manager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+//        manager.getDefaultDisplay().getMetrics(metrics);
+//        ViewGroup.LayoutParams param = viewImg.getLayoutParams();
+//        viewImg.setMaxHeight((int) (metrics.heightPixels*0.1)); //50%
 
 
         ImageButton main_light = (ImageButton)findViewById(R.id.main_light);
