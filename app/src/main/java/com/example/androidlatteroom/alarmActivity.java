@@ -1,19 +1,30 @@
 package com.example.androidlatteroom;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Calendar;
@@ -68,10 +79,12 @@ public class alarmActivity extends AppCompatActivity {
     private Socket socket;
     private BufferedReader br;
     private PrintWriter pr;
+    private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 
     class SharedObject {
         private Object MONITOR = new Object();
         private LinkedList<String> list = new LinkedList<String>();
+        private LinkedList<LatteMessage> msgList = new LinkedList<LatteMessage>();
 
         SharedObject() {
         } // 생성자
@@ -79,6 +92,15 @@ public class alarmActivity extends AppCompatActivity {
         public void put(String s) {
             synchronized (MONITOR) {
                 list.addLast(s);
+                Log.i("ArduinoTest", "공용객체에 데이터 입력");
+                // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
+                MONITOR.notify();
+            }
+        }
+
+        public void put(LatteMessage s) {
+            synchronized (MONITOR) {
+                msgList.addLast(s);
                 Log.i("ArduinoTest", "공용객체에 데이터 입력");
                 // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
                 MONITOR.notify();
@@ -106,16 +128,43 @@ public class alarmActivity extends AppCompatActivity {
             return result;
         }
 
+        public LatteMessage popMsg() {
+            LatteMessage result = null;
+
+            synchronized (MONITOR) {
+                if (msgList.isEmpty()) {
+                    // 리스트 안에 문자열이 없으니까 일시 대기해야 한다.
+                    try {
+                        MONITOR.wait();
+                        // 큐 구조에서 가져옴
+                        result = msgList.removeFirst();
+                    } catch (Exception e) {
+                        Log.i("ArduinoTest", e.toString());
+                    }
+                } else {
+                    result = msgList.removeFirst();
+                    Log.i("ArduinoTest", "공용객체에서 데이터 추출");
+                }
+            }
+            return result;
+        }
+
         public void send(String msg) {
             try {
                 pr.println(msg);
                 pr.flush();
-
             } catch (Exception e) {
                 Log.i("test", e.toString());
             }
+        }
 
-
+        public void send(LatteMessage msg) {
+            try {
+                pr.println(gson.toJson(msg));
+                pr.flush();
+            } catch (Exception e) {
+                Log.i("test", e.toString());
+            }
         }
 
     }
@@ -130,6 +179,7 @@ public class alarmActivity extends AppCompatActivity {
         //Button alarm_confirm = (Button)findViewById(R.id.alarm_confirm);
         TimePicker mTimePicker = (TimePicker) findViewById(R.id.timePicker);
 
+
         Calendar mCalendar = Calendar.getInstance();
         int hour,min;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -142,6 +192,64 @@ public class alarmActivity extends AppCompatActivity {
 
 
 
+        @SuppressLint("HandlerLeak") Handler handler = new Handler(){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+
+                String result = "";
+                if((result = msg.getData().getString("sendSuc"))!=null){
+                    Toast sendMsg = Toast.makeText(getApplicationContext(),
+                            "알람정보 서버로 전송완료",Toast.LENGTH_SHORT);
+                    sendMsg.show();
+                }
+
+            }
+        };
+
+        Thread t = new Thread(()->{
+            try {
+                socket = new Socket(host,55566);
+                br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                pr = new PrintWriter(socket.getOutputStream());
+
+                GetDataTimer runnable = new GetDataTimer(br,shared,handler);
+                Thread getData = new Thread(runnable);
+                getData.start();
+
+                while(true){
+                    Bundle bundle = new Bundle();
+                    Message handleMessage = new Message();
+                    LatteMessage msg = shared.popMsg();
+                    shared.send(msg);
+                    bundle.putString("sendSuc",msg.toString());
+                    handleMessage.setData(bundle);
+                    handler.sendMessage(handleMessage);
+                }
+
+
+            }catch(IOException e){
+
+            }
+        });
+
+
+
+        t.start();
+
+        Button sendToServer = findViewById(R.id.sendToServer);
+        sendToServer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Alert data = new Alert(hour,min,"",true);
+                LatteMessage msg = new LatteMessage(data);
+                shared.put(msg);
+            }
+        });
+
+
+
 
     }// onCreate() end
 }// Activity class end
@@ -151,14 +259,19 @@ class GetDataTimer implements Runnable {
 
     private BufferedReader br;
     private Handler handler;
-    private climateActivity.SharedObject shared;
+    private alarmActivity.SharedObject shared;
+
+    GetDataTimer(){
+
+    }
 
     GetDataTimer(BufferedReader br,
-                   climateActivity.SharedObject shared, Handler handler) {
+                 alarmActivity.SharedObject shared, Handler handler) {
         this.br = br;
         this.shared = shared;
         this.handler = handler;
     }
+
 
 
     @Override

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_height="match_parent">
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="@drawable/background">-->
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="1"/>-->
-<!--    </LinearLayout>-->
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:background="@drawable/background">-->
+    <!--        <TextView-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="1"/>-->
+    <!--    </LinearLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,19 +23,107 @@
         android:orientation="vertical">
 
         <!-- 현재 온도, 날짜 습도(그림 위로)-->
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:textSize="50pt" />-->
+        <!--        <TextView-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textSize="50pt" />-->
 
-        <ImageView
-            android:id="@+id/main_background"
+<!--<<<<<<< HEAD-->
+
+        <!--        <LinearLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="@drawable/background"-->
+        <!--            android:orientation="vertical">-->
+
+        <!--        <ImageView-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="300dp"-->
+        <!--            android:scaleType="fitXY"-->
+        <!--            android:src="@drawable/background">-->
+
+
+        <!--        </ImageView>-->
+        <!--        </LinearLayout>-->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="340dp"
-            android:scaleType="fitCenter"
-            android:paddingRight="10dp"
-            android:src="@drawable/background" />
+            android:layout_height="300dp"
+            android:background="@drawable/background"
+            android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="6"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/mainTemperature"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="25ºC" />
+
+                    <TextView
+                        android:id="@+id/mainDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="2020.05.13(화)" />
+
+                    <TextView
+                        android:id="@+id/mainHumidity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="33%" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="6" />
+                <ImageButton
+                    android:layout_width="10pt"
+                    android:layout_height="10pt"
+                    android:src="@drawable/icon_alarm_on"
+                    android:layout_weight="1"
+                    android:id="@+id/AlarmIcon"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="알람시간 : 1010"
+                    android:id="@+id/AlarmActivity"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -118,10 +206,10 @@
 
 
         </LinearLayout>
-<!--<<<<<<< HEAD-->
-<!--&lt;!&ndash;<<<<<<< HEAD&ndash;&gt;-->
-<!--=======-->
-<!--&gt;>>>>>> upstream/master-->
+        <!--<<<<<<< HEAD-->
+        <!--&lt;!&ndash;<<<<<<< HEAD&ndash;&gt;-->
+        <!--=======-->
+        <!--&gt;>>>>>> upstream/master-->
 
 
         <!--    <Button-->
@@ -131,20 +219,20 @@
         <!--        android:text="test"/>-->
         <!--    </LinearLayout>-->
 
-<!--<<<<<<< HEAD-->
-<!--&lt;!&ndash;    <Button&ndash;&gt;-->
-<!--&lt;!&ndash;        android:layout_width="match_parent"&ndash;&gt;-->
-<!--&lt;!&ndash;        android:layout_height="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;        android:id="@+id/test"&ndash;&gt;-->
-<!--&lt;!&ndash;        android:text="test"/>&ndash;&gt;-->
-<!--&lt;!&ndash;    </LinearLayout>&ndash;&gt;-->
+        <!--<<<<<<< HEAD-->
+        <!--&lt;!&ndash;    <Button&ndash;&gt;-->
+        <!--&lt;!&ndash;        android:layout_width="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;        android:layout_height="wrap_content"&ndash;&gt;-->
+        <!--&lt;!&ndash;        android:id="@+id/test"&ndash;&gt;-->
+        <!--&lt;!&ndash;        android:text="test"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;    </LinearLayout>&ndash;&gt;-->
 
-<!--=======-->
+        <!--=======-->
     </LinearLayout>
-<!--&gt;>>>>>> upstream/master-->
-<!--=======-->
+    <!--&gt;>>>>>> upstream/master-->
+    <!--=======-->
 
-<!--    </LinearLayout>-->
+    <!--    </LinearLayout>-->
 
-<!--&gt;>>>>>> upstream/master-->
+    <!--&gt;>>>>>> upstream/master-->
 </ScrollView>
