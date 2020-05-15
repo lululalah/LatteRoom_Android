@@ -133,7 +133,7 @@ public class bedActivity extends AppCompatActivity {
         bed30btn.setOnClickListener((v)->{
             Thread t = new Thread(()->{
 
-                SensorData data = new SensorData("BedMotor","On","30");
+                SensorData data = new SensorData("BedMotor","30");
                 LatteMessage msg = new LatteMessage(data);
                 shared.send(msg);
 
@@ -143,7 +143,7 @@ public class bedActivity extends AppCompatActivity {
 
         bed45btn.setOnClickListener((v)->{
             Thread t = new Thread(()->{
-                SensorData data = new SensorData("BedMotor","On","45");
+                SensorData data = new SensorData("BedMotor","45");
                 LatteMessage msg = new LatteMessage(data);
                 shared.send(msg);
 
@@ -152,7 +152,7 @@ public class bedActivity extends AppCompatActivity {
         });
         bed90btn.setOnClickListener((v)->{
             Thread t = new Thread(()->{
-                SensorData data = new SensorData("BedMotor","On","90");
+                SensorData data = new SensorData("BedMotor","90");
                 LatteMessage msg = new LatteMessage(data);
                 shared.send(msg);
             });
