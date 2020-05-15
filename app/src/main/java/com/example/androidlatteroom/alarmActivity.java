@@ -31,7 +31,49 @@ import java.util.Calendar;
 import java.util.LinkedList;
 
 public class alarmActivity extends AppCompatActivity {
+/*
+*
+* 출처 http://susemi99.kr/732/
+* https://kd3302.tistory.com/63
+*
+* public class MainActivity extends Activity
+{
+   private static final String BASE_PATH = Environment.getExternalStorageDirectory() + "/myapp";
+   private static final String NORMAL_PATH = BASE_PATH + "/normal";
 
+   private AlarmManager _am;
+
+   private ToggleButton _toggleSun, _toggleMon, _toggleTue, _toggleWed, _toggleThu, _toggleFri, _toggleSat;
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState)
+   {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+
+      _am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+      _toggleSun = (ToggleButton) findViewById(R.id.toggle_sun);
+      _toggleMon = (ToggleButton) findViewById(R.id.toggle_mon);
+      _toggleTue = (ToggleButton) findViewById(R.id.toggle_tue);
+      _toggleWed = (ToggleButton) findViewById(R.id.toggle_wed);
+      _toggleThu = (ToggleButton) findViewById(R.id.toggle_thu);
+      _toggleFri = (ToggleButton) findViewById(R.id.toggle_fri);
+      _toggleSat = (ToggleButton) findViewById(R.id.toggle_sat);
+
+
+   }
+
+   public void onRegist(View v)
+   {
+      Log.i("MainActivity.java | onRegist", "|" + "========= regist" + "|");
+
+      boolean[] week = { false, _toggleSun.isChecked(), _toggleMon.isChecked(), _toggleTue.isChecked(), _toggleWed.isChecked(),
+            _toggleThu.isChecked(), _toggleFri.isChecked(), _toggleSat.isChecked() }; // sunday=1 이라서 0의 자리에는 아무 값이나 넣었음
+
+      Intent intent = new Intent(this, AlarmReceiver.class);
+*
+*
+* */
     private static String host = "70.12.60.99";
     private static String deviceName = "Android";
     private Socket socket;

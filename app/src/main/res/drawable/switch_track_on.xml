@@ -10,7 +10,7 @@
         android:height="30dp" />
 
     <solid
-        android:color="@color/colorPrimary" />
+        android:color="@color/colorDarkGreen" />
 
     <!--stroke
         android:width="2dp"

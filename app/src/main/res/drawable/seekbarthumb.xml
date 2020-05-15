@@ -1,17 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 원모양의 시크바 컨트롤러 -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval"
-    android:useLevel="false"  >
-    <!-- 배경 -->
-    <solid
-        android:color="@color/colorPrimary"/>
-    <!-- 테두리 -->
-    <stroke
-        android:width="2dp"
-        android:color="@color/colorPrimary" />
-    <!-- 크기 -->
-    <size
-        android:width="13dp"
-        android:height="13dp"/>
-</shape>
+<!--<shape xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:shape="oval"-->
+<!--    android:useLevel="false"  >-->
+<!--    &lt;!&ndash; 배경 &ndash;&gt;-->
+<!--    <solid-->
+<!--        android:color="@color/colorPrimary"/>-->
+<!--    &lt;!&ndash; 테두리 &ndash;&gt;-->
+<!--    <stroke-->
+<!--        android:width="2dp"-->
+<!--        android:color="@color/colorPrimary" />-->
+<!--    &lt;!&ndash; 크기 &ndash;&gt;-->
+<!--    <size-->
+<!--        android:width="13dp"-->
+<!--        android:height="13dp"/>-->
+<!--</shape>-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+    android:left="1dp"
+    android:right="1dp"
+    android:top="1dp"
+    android:bottom="1dp">
+
+    <shape
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:shape="oval">
+
+        <size
+            android:width="29dp"
+            android:height="29dp" />
+
+        <solid
+            android:color="@color/colorPrimary" />
+
+    </shape>
+</item>
+</layer-list>
