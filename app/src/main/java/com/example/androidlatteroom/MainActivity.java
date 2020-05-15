@@ -79,6 +79,19 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+         ImageButton main_exit = (ImageButton)findViewById(R.id.main_exit);
+        main_exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                ComponentName cname = new ComponentName
+                        ("com.example.androidlatteroom",
+                                "com.example.androidlatteroom.alarmActivity");
+                i.setComponent(cname);
+                startActivity(i);
+            }
+        });
 //<<<<<<< HEAD
 ////<<<<<<< HEAD
 //        //Button test = findViewById(R.id.test);
