@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/notosanskrregular"
-                android:text="원하는 침대각도를 설정하세요"
+                android:text="원하는 침대각도를 저장하세요"
                 android:textSize="10pt" />
 
             <TextView
@@ -44,7 +44,8 @@
             android:adjustViewBounds="true"
             android:background="@null"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/bed30btn" />
+            app:srcCompat="@drawable/bed30btn"
+            android:layout_marginBottom="10dp"/>
 
         <ImageButton
             android:id="@+id/bed45btn"
@@ -53,7 +54,8 @@
             android:adjustViewBounds="true"
             android:background="@null"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/bed45btn" />
+            app:srcCompat="@drawable/bed45btn"
+            android:layout_marginBottom="10dp"/>
 
         <ImageButton
             android:id="@+id/bed90btn"
@@ -62,7 +64,8 @@
             android:adjustViewBounds="true"
             android:background="@null"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/bed90btn" />
+            app:srcCompat="@drawable/bed90btn"
+            android:layout_marginBottom="10dp"/>
 
     </LinearLayout>
 

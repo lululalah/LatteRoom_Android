@@ -75,7 +75,8 @@ public class alarmActivity extends AppCompatActivity {
 *
 *
 * */
-    private static String host = "70.12.60.99";
+//    private static String host = "70.12.60.99";
+    private static String host = "70.12.60.105";
     private static String deviceName = "Android";
     private Socket socket;
     private BufferedReader br;

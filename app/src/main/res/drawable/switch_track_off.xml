@@ -7,13 +7,13 @@
 
     <size
         android:width="51dp"
-        android:height="30dp" />
+        android:height="20dp" />
 
     <solid
-        android:color="@color/colorBeige" />
+        android:color="@color/backWhite" />
 
-    <!--stroke
+    <stroke
         android:width="2dp"
-        android:color="#000000" /-->
+        android:color="@color/colorDarkGreen" />
 
 </shape>

@@ -21,8 +21,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 
 
@@ -47,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private PrintWriter pr;
     private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
     private static String host = "70.12.60.105";
+//    private static String host = "70.12.60.99";
+
+    private String alarmDate;
 
     public static String getDeviceId() {
         return DEVICE_ID;
@@ -65,11 +72,11 @@ public class MainActivity extends AppCompatActivity {
         } // 생성자
 
         public void put(String s) {
-                    synchronized (MONITOR) {
-                        list.addLast(s);
-                        Log.i("ArduinoTest", "공용객체에 데이터 입력");
-                        // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
-                        MONITOR.notify();
+            synchronized (MONITOR) {
+                list.addLast(s);
+                Log.i("ArduinoTest", "공용객체에 데이터 입력");
+                // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
+                MONITOR.notify();
             }
         }
 
@@ -102,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return result;
         }
+
         public LatteMessage popMsg() {
             LatteMessage result = null;
 
@@ -134,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+
         public void send(LatteMessage msg) {
             try {
 
@@ -157,24 +166,56 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent serviceI = new Intent(getApplicationContext(),DeviceSettingService.class);
+        Intent serviceI = new Intent(getApplicationContext(), DeviceSettingService.class);
         startService(serviceI);
+        final TextView mainTemperature = findViewById(R.id.mainTemperature);
+        final TextView mainDate = findViewById(R.id.mainDate);
+        final TextView mainHumidity = findViewById(R.id.mainHumidity);
+        final TextView AlarmActivity = findViewById(R.id.AlarmActivity);
 
-//<<<<<<< HEAD
-
-        @SuppressLint("HandlerLeak") Handler handler = new Handler(){
+        @SuppressLint("HandlerLeak") Handler handler = new Handler() {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
+                String result = "";
+
+                if ((result = msg.getData().getString("TEMP")) != null) {
+                    mainTemperature.setText(result);
+                }else if ((result = msg.getData().getString("LIGHT")) != null) {
+                      mainHumidity.setText(result);
+                }else if ((result = msg.getData().getString("DATE")) != null) {
+                    mainDate.setText(result);
+                }else if((result = msg.getData().getString("ALERT")) != null){
+                    AlarmActivity.setText(result);
+                }
+
+
 
             }
         };
+        Thread timeSetting = new Thread(() -> {
+            while (true) {
+                Date nowTime = new Date(System.currentTimeMillis());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd(E)");
+                Bundle bundle = new Bundle();
+                Message msg = new Message();
+                bundle.putString("DATE",sdf.format(nowTime));
+                msg.setData(bundle);
+                handler.sendMessage(msg);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        timeSetting.start();
 
-        Thread t = new Thread(()->{
+        Thread t = new Thread(() -> {
             try {
-                socket = new Socket(host,55566);
+                socket = new Socket(host, 55566);
 
-                br =  new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 pr = new PrintWriter(socket.getOutputStream());
 //                LatteMessage initData;
                 // 초기 셋팅값 서버에 요청
@@ -193,24 +234,52 @@ public class MainActivity extends AppCompatActivity {
                 //shared.send();
 
 
-                Thread getMsg = new Thread(()->{
+                Thread getMsg = new Thread(() -> {
                     String fromServer = "";
                     while (true) {
 
                         try {
-                            if (!(( fromServer= br.readLine())!=null)) break;
-                            Log.i("start",fromServer);
+                            if (!((fromServer = br.readLine()) != null)) break;
+                            Log.i("start", fromServer);
                             Bundle bundle = new Bundle();
                             Message message = new Message();
-                            // 여기서 핸들러에 데이터 넣는 처리.
-                            try {
-                                LatteMessage msg = gson.fromJson(fromServer, LatteMessage.class);
-                                //SensorData data = gson.fromJson(msg.getJsonData(), SensorData.class);
-                                Log.i("start",msg.getJsonData());
-                            }catch(Exception e2) {
-                                Log.i("Exception",e2.toString());
-                            }
 
+
+                            // 여기서 핸들러에 데이터 넣는 처리.
+//
+                            try{
+                                LatteMessage msg = gson.fromJson(fromServer, LatteMessage.class);
+                                SensorData data = gson.fromJson(msg.getJsonData(), SensorData.class);
+                              Log.i("check",msg.toString());
+//                            bundle.putString(data.getSensorID(), data.getStates());
+//                            알람처리
+                                String code = data.getSensorID();
+                                String value = "";
+                                if ("ALERT".equals(data.getSensorID())) {
+                                    value = data.getStateDetail();
+//                                    bundle.putString("ALERT", data.getStateDetail());
+//                                    message.setData(bundle);
+//                                    Log.i("check",data.getStateDetail());
+                                }else if("TEMP".equals(data.getSensorID())){
+                                    value = data.getStates();
+//                                    bundle.putString("TEMP",data.getStates());
+//                                    message.setData(bundle);
+//                                    Log.i("check",data.getStateDetail());
+                                }else if("LIGHT".equals(data.getSensorID())){
+                                    value = data.getStateDetail();
+//                                    bundle.putString("LIGHT",data.getStateDetail());
+//                                    message.setData(bundle);
+//                                    Log.i("check",data.getStateDetail());
+                                }
+                                bundle.putString(code,value);
+                                message.setData(bundle);
+                            message.setData(bundle);
+                            handler.sendMessage(message);
+//
+//                            Log.i("start", msg.getJsonData());
+                            }catch(Exception e2){
+                                Log.i("start",e2.toString());
+                            }
 
 
                         } catch (IOException e) {
@@ -220,18 +289,19 @@ public class MainActivity extends AppCompatActivity {
                 });
                 getMsg.start();
 
-                while(true){
+                while (true) {
                     LatteMessage msg = shared.popMsg();
                     shared.send(msg);
                 }
-            }catch(IOException e){
+
+            } catch (IOException e) {
 
             }
 
         });
         t.start();
 
-        ImageButton main_light = (ImageButton)findViewById(R.id.main_light);
+        ImageButton main_light = (ImageButton) findViewById(R.id.main_light);
         main_light.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton main_bed = (ImageButton)findViewById(R.id.main_bed);
+        ImageButton main_bed = (ImageButton) findViewById(R.id.main_bed);
         main_bed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -257,20 +327,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        ImageButton main_alarm = (ImageButton)findViewById(R.id.alarm_confirm);
-//        main_alarm.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent i = new Intent();
-//                ComponentName cname = new ComponentName
-//                        ("com.example.androidlatteroom",
-//                                "com.example.androidlatteroom.alarmActivity");
-//                i.setComponent(cname);
-//                startActivity(i);
-//            }
-//        });
 
-        ImageButton main_thermo = (ImageButton)findViewById(R.id.main_thermo);
+        ImageButton main_thermo = (ImageButton) findViewById(R.id.main_thermo);
         main_thermo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -283,20 +341,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//         ImageButton main_exit = (ImageButton)findViewById(R.id.main_exit);
-//        main_exit.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent i = new Intent();
-//                ComponentName cname = new ComponentName
-//                        ("com.example.androidlatteroom",
-//                                "com.example.androidlatteroom.alarmActivity");
-//                i.setComponent(cname);
-//                startActivity(i);
-//            }
-//        });
 
-        final TextView AlarmActivity = findViewById(R.id.AlarmActivity);
+
         AlarmActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -309,17 +355,58 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton AlarmIcon = findViewById(R.id.AlarmIcon);
+        Switch AlarmSwitch = findViewById(R.id.AlarmSwitch);
+        AlarmSwitch.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                if(AlarmSwitch.isChecked()){
+
+
+//                    Alert time = new Alert();
+
+//                    LatteMessage msg = new LatteMessage(time);
+//                    shared.put(msg);
+                }
+            }
+
+        });
+
+/*
+* // 스위치 버튼입니다.
+        SwitchButton switchButton = (SwitchButton) findViewById(R.id.AlarmSwitch);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+           // 스위치 버튼이 체크되었는지 검사하여 텍스트뷰에 각 경우에 맞게 출력합니다.
+                if (isChecked){
+                   // 알람켜기
+
+                }else{
+                   // 알람끄기
+
+                }
+            }
+        });
+* */
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        shared.put(new LatteMessage("TEMP"));
+        shared.put(new LatteMessage("ALERT"));
+        shared.put(new LatteMessage("LIGHT"));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode ==3000 && resultCode==7000){
-            String msg = (String)data.getExtras().get("ResultValue");
+        if (requestCode == 3000 && resultCode == 7000) {
+            String msg = (String) data.getExtras().get("ResultValue");
 
-            Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         }
     }
 }
