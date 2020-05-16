@@ -41,7 +41,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:background="#80ffffff">
+                    android:background="#80ffffff"
+                    android:layout_marginRight="10dp">
 
                     <TextView
                         android:id="@+id/mainTemperature"
