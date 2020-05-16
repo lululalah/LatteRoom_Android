@@ -77,12 +77,12 @@
         android:text="참고)적정희망온도:\n여름철:24~26°C\n겨울철:20~22°C" />
 
     <!--    에어컨을 작동하겠습니다/보일러를 작동하겠습니다/희망온도를 유지하겠습니다.-->
-    <TextView
-        android:id="@+id/climateCondition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:background="@color/colorBeige"
-        android:text="희망온도를 유지중입니다." />
+<!--    <TextView-->
+<!--        android:id="@+id/climateCondition"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center_horizontal"-->
+<!--        android:background="@color/colorBeige"-->
+<!--        android:text="희망온도를 유지중입니다." />-->
 
 </LinearLayout>
