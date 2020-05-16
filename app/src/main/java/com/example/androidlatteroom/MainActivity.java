@@ -281,6 +281,10 @@ public class MainActivity extends AppCompatActivity {
                                 Log.i("start",e2.toString());
                             }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a56db5f2854a5dd5d03a3f43ae6c8be998d16d76
 
                         } catch (IOException e) {
                             e.printStackTrace();
