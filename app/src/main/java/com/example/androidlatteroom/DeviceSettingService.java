@@ -131,36 +131,44 @@ class Alert {
 
 class LatteMessage {
     private String deviceID;
-    private String voType;
+    private String deviceType;
+    private String dataType;
     private String jsonData;
     private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 
 
     // constructor
     private LatteMessage() {
-        this.deviceID = "Android01";
+        this.deviceID = MainActivity.getDeviceId();
+        this.deviceType = MainActivity.getDeviceType();
     }
 
     public LatteMessage(SensorData data) {
         this();
-        this.voType = "SensorData";
+        this.dataType = "SensorData";
         this.jsonData = LatteMessage.gson.toJson(data);
     }
 
     public LatteMessage(Alert data) {
         this();
-        this.voType = "Alert";
+        this.dataType = "Alert";
         this.jsonData = LatteMessage.gson.toJson(data);
+    }
+
+    public LatteMessage(String id, String type, String data) {
+        this.deviceID = id;
+        this.dataType = type;
+        this.jsonData = data;
     }
 
     public LatteMessage(String states, String stateDetail) {
         this();
-        this.voType = "Request";
+        this.dataType = "Request";
         this.jsonData = LatteMessage.gson.toJson(new SensorData(states, stateDetail));
     }
     public LatteMessage(String SensorId) {
         this();
-        this.voType = "Request";
+        this.dataType = "Request";
         this.jsonData = SensorId;
     }
 
@@ -173,12 +181,16 @@ class LatteMessage {
         this.deviceID = deviceID;
     }
 
-    public String getVoType() {
-        return voType;
+    public String getDeviceType() { return deviceType; }
+
+    public void setDeviceType(String deviceType) { this.deviceType = deviceType; }
+
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setVoType(String voType) {
-        this.voType = voType;
+    public void setDataType(String voType) {
+        this.dataType = voType;
     }
 
     public String getJsonData() {
@@ -191,7 +203,7 @@ class LatteMessage {
 
     @Override
     public String toString() {
-        return "Message [deviceID=" + deviceID + ", voType=" + voType + ", jsonData=" + jsonData + "]";
+        return "Message [deviceID=" + deviceID + ", voType=" + dataType + ", jsonData=" + jsonData + "]";
     }
 
 }
