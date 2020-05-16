@@ -38,6 +38,7 @@ public class bedActivity extends AppCompatActivity {
     class SharedObject {
         private Object MONITOR = new Object();
         private LinkedList<String> list = new LinkedList<String>();
+        private LinkedList<LatteMessage> msgList = new LinkedList<LatteMessage>();
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
         SharedObject() {
         } // 생성자
@@ -45,6 +46,14 @@ public class bedActivity extends AppCompatActivity {
         public void put(String s) {
             synchronized (MONITOR) {
                 list.addLast(s);
+                Log.i("ArduinoTest", "공용객체에 데이터 입력");
+                // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
+                MONITOR.notify();
+            }
+        }
+        public void put(LatteMessage s){
+            synchronized (MONITOR) {
+                msgList.addLast(s);
                 Log.i("ArduinoTest", "공용객체에 데이터 입력");
                 // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
                 MONITOR.notify();
@@ -66,6 +75,26 @@ public class bedActivity extends AppCompatActivity {
                     }
                 } else {
                     result = list.removeFirst();
+                    Log.i("ArduinoTest", "공용객체에서 데이터 추출");
+                }
+            }
+            return result;
+        }
+        public LatteMessage popMsg() {
+            LatteMessage result=null;
+
+            synchronized (MONITOR) {
+                if (list.isEmpty()) {
+                    // 리스트 안에 문자열이 없으니까 일시 대기해야 한다.
+                    try {
+                        MONITOR.wait();
+                        // 큐 구조에서 가져옴
+                        result = msgList.removeFirst();
+                    } catch (Exception e) {
+                        Log.i("ArduinoTest", e.toString());
+                    }
+                } else {
+                    result = msgList.removeFirst();
                     Log.i("ArduinoTest", "공용객체에서 데이터 추출");
                 }
             }
@@ -131,32 +160,35 @@ public class bedActivity extends AppCompatActivity {
 
         final TextView bedSetting = findViewById(R.id.bedSetting);
         bed30btn.setOnClickListener((v)->{
-            Thread t = new Thread(()->{
+//            Thread t = new Thread(()->{
 
-                SensorData data = new SensorData("BedMotor","30");
+                SensorData data = new SensorData("Bed","30");
                 LatteMessage msg = new LatteMessage(data);
-                shared.send(msg);
+                shared.put(msg);
+//                shared.send(msg);
 
-            });
-            t.start();
+//            });
+//            t.start();
         });
 
         bed45btn.setOnClickListener((v)->{
-            Thread t = new Thread(()->{
-                SensorData data = new SensorData("BedMotor","45");
+//            Thread t = new Thread(()->{
+                SensorData data = new SensorData("Bed","45");
                 LatteMessage msg = new LatteMessage(data);
-                shared.send(msg);
+                shared.put(msg);
+                //shared.send(msg);
 
-            });
-            t.start();
+//            });
+//            t.start();
         });
         bed90btn.setOnClickListener((v)->{
-            Thread t = new Thread(()->{
-                SensorData data = new SensorData("BedMotor","90");
+//            Thread t = new Thread(()->{
+                SensorData data = new SensorData("Bed","90");
                 LatteMessage msg = new LatteMessage(data);
-                shared.send(msg);
-            });
-            t.start();
+                shared.put(msg);
+//                shared.send(msg);
+//            });
+//            t.start();
         });
         @SuppressLint("HandlerLeak") Handler handler = new Handler() {
             @Override
@@ -191,6 +223,11 @@ public class bedActivity extends AppCompatActivity {
                 GetDataBed runnable = new GetDataBed(br, shared, handler);
                 Thread getData = new Thread(runnable);
                 getData.start();
+
+                while(true){
+                    LatteMessage result = shared.popMsg();
+                    shared.send(result);
+                }
 
                 // 처음 서버 접속에 보내줄 데이터 밑에 정의
                 //공유객체안에 매서드를 생성하여 보내는 형식으로 사용.
@@ -240,18 +277,18 @@ class GetDataBed implements Runnable {
 //                if(gson.fromJson(msg,LatteMessage.class)!=null) {
                     LatteMessage msgJson = gson.fromJson(msg, LatteMessage.class);
 
-                    Log.i("msgJson", msgJson.toString());
+//                    Log.i("msgJson", msgJson.toString());
                     SensorData sensordata = gson.fromJson(msgJson.getJsonData(), SensorData.class);
-                    Log.i("sensordata", sensordata.toString());
+//                    Log.i("sensordata", sensordata.toString());
 
 //                Log.i("test", msg);
 //                Log.i("json", Msgjson.getJsonData());
 //                SensorData sensordata =gson.fromJson(msgJson.getJsonData(), SensorData.class);
-                    Log.i("test", sensordata.getStateDetail());
+//                    Log.i("test", sensordata.getStateDetail());
 
 
-                    if ("On".equals(sensordata.getStates())) {
-                        bundle.putString("BedDeg", sensordata.getStateDetail());
+                    if ("Bed".equals(sensordata.getSensorID())) {
+                        bundle.putString("BedDeg", sensordata.getStates());
                         message.setData(bundle);
                     }
 

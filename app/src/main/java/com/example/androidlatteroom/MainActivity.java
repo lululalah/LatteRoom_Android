@@ -39,13 +39,22 @@ import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String DEVICE_ID = "Android01";
+    private static final String DEVICE_TYPE = "USER";
 
     private Socket socket;
     private BufferedReader br;
     private PrintWriter pr;
     private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
-    private static String host = "70.12.60.99";
+    private static String host = "70.12.60.105";
 
+    public static String getDeviceId() {
+        return DEVICE_ID;
+    }
+
+    public static String getDeviceType() {
+        return DEVICE_TYPE;
+    }
 
     class SharedObject {
         private Object MONITOR = new Object();
@@ -56,11 +65,11 @@ public class MainActivity extends AppCompatActivity {
         } // 생성자
 
         public void put(String s) {
-            synchronized (MONITOR) {
-                list.addLast(s);
-                Log.i("ArduinoTest", "공용객체에 데이터 입력");
-                // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
-                MONITOR.notify();
+                    synchronized (MONITOR) {
+                        list.addLast(s);
+                        Log.i("ArduinoTest", "공용객체에 데이터 입력");
+                        // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
+                        MONITOR.notify();
             }
         }
 
@@ -167,9 +176,17 @@ public class MainActivity extends AppCompatActivity {
 
                 br =  new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 pr = new PrintWriter(socket.getOutputStream());
+//                LatteMessage initData;
                 // 초기 셋팅값 서버에 요청
                 //
-                //LatteMessage initData = new LatteMessage("Temperature");
+                pr.println(getDeviceId());
+                pr.println(getDeviceType());
+                shared.put(new LatteMessage(getDeviceId(), "SensorList", null));
+
+//                initData = new LatteMessage("Temperature");
+                shared.put(new LatteMessage("TEMP"));
+                shared.put(new LatteMessage("ALERT"));
+                shared.put(new LatteMessage("LIGHT"));
                 //
                 //
                 //
@@ -179,17 +196,21 @@ public class MainActivity extends AppCompatActivity {
                 Thread getMsg = new Thread(()->{
                     String fromServer = "";
                     while (true) {
+
                         try {
                             if (!(( fromServer= br.readLine())!=null)) break;
+                            Log.i("start",fromServer);
                             Bundle bundle = new Bundle();
                             Message message = new Message();
                             // 여기서 핸들러에 데이터 넣는 처리.
                             try {
                                 LatteMessage msg = gson.fromJson(fromServer, LatteMessage.class);
-                                SensorData data = gson.fromJson(msg.getJsonData(), SensorData.class);
+                                //SensorData data = gson.fromJson(msg.getJsonData(), SensorData.class);
+                                Log.i("start",msg.getJsonData());
                             }catch(Exception e2) {
                                 Log.i("Exception",e2.toString());
                             }
+
 
 
                         } catch (IOException e) {
@@ -197,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+                getMsg.start();
 
                 while(true){
                     LatteMessage msg = shared.popMsg();
@@ -207,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-//        t.start();
+        t.start();
 
         ImageButton main_light = (ImageButton)findViewById(R.id.main_light);
         main_light.setOnClickListener(new View.OnClickListener() {

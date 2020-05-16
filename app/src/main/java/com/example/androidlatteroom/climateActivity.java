@@ -69,6 +69,7 @@ public class climateActivity extends AppCompatActivity {
     class SharedObject {
         private Object MONITOR = new Object();
         private LinkedList<String> list = new LinkedList<String>();
+        private LinkedList<LatteMessage> msgList = new LinkedList<LatteMessage>();
 
         SharedObject() {
         } // 생성자
@@ -76,6 +77,15 @@ public class climateActivity extends AppCompatActivity {
         public void put(String s) {
             synchronized (MONITOR) {
                 list.addLast(s);
+                Log.i("ArduinoTest", "공용객체에 데이터 입력");
+                // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
+                MONITOR.notify();
+            }
+        }
+
+        public void put(LatteMessage s) {
+            synchronized (MONITOR) {
+                msgList.addLast(s);
                 Log.i("ArduinoTest", "공용객체에 데이터 입력");
                 // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
                 MONITOR.notify();
@@ -103,11 +113,31 @@ public class climateActivity extends AppCompatActivity {
             return result;
         }
 
+        public LatteMessage popMsg() {
+            LatteMessage result = null;
+
+            synchronized (MONITOR) {
+                if (msgList.isEmpty()) {
+                    // 리스트 안에 문자열이 없으니까 일시 대기해야 한다.
+                    try {
+                        MONITOR.wait();
+                        // 큐 구조에서 가져옴
+                        result = msgList.removeFirst();
+                    } catch (Exception e) {
+                        Log.i("ArduinoTest", e.toString());
+                    }
+                } else {
+                    result = msgList.removeFirst();
+                    Log.i("ArduinoTest", "공용객체에서 데이터 추출");
+                }
+            }
+            return result;
+        }
+
         public void send(String msg) {
             try {
                 pr.println(msg);
                 pr.flush();
-
             } catch (Exception e) {
                 Log.i("test", e.toString());
             }
@@ -117,26 +147,9 @@ public class climateActivity extends AppCompatActivity {
             try {
                 pr.println(gson.toJson(msg));
                 pr.flush();
-
             } catch (Exception e) {
                 Log.i("test", e.toString());
             }
-        }
-
-        public void connectServer() {
-            Thread t = new Thread(() -> {
-                send("curTmp,25");
-                //send();
-            });
-            t.start();
-        }
-
-        public void checkDeviceState() {
-            Thread t = new Thread(() -> {
-                send("check");
-            });
-            t.start();
-
         }
 
     }
@@ -160,23 +173,23 @@ public class climateActivity extends AppCompatActivity {
 
         climate_seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             Thread t;
-
+            LatteMessage msg;
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //setClimate(i);
                 //climate_sbValue.setText( i + "°C");
                 climate_sbValue.setText(progress + "°C");
 
-                t = new Thread(() -> {
-                    String code = "hopeTmp";
-                    String value = Integer.toString(progress);
-                    shared.send("hopeTmp," + Integer.toString(progress));
+//                t = new Thread(() -> {
+                    SensorData data = new SensorData("TEMP",Integer.toString(progress));
+                    msg = new LatteMessage(data);
+//                    shared.send("hopeTmp," + Integer.toString(progress));
 
                     //Json 문자열로 변환
 //                    sendMsg msg = new sendMsg(code,value);
 //                    Log.i("test",msg.makeJson());
 //                    shared.send(msg.makeJson());
-                });
+//                });
 
                 //shared.put(i);
             }
@@ -188,7 +201,8 @@ public class climateActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                t.start();
+                shared.put(msg);
+//                t.start();
             }
         });
 
@@ -202,14 +216,19 @@ public class climateActivity extends AppCompatActivity {
             public void handleMessage(@NonNull Message msg) {
                 String result = "";
 
-                if ((result = msg.getData().getString("curTmp")) != null) {
+//                if ((result = msg.getData().getString("curTmp")) != null) {
+//                    climateSensorValue.setText(result + "°C");
+//                } else if ((result = msg.getData().getString("hopeTmp")) != null) {
+//                    climate_sbValue.setText(result + "°C");
+//                } else if ((result = msg.getData().getString("status")) != null) {
+//                    climate_status.setText(result);
+//                } else if ((result = msg.getData().getString("deviceStatus")) != null) {
+//                    climateCondition.setText(result);
+//                }
+
+                if((result = msg.getData().getString("TEMP"))!=null){
+                    Log.i("climate",result);
                     climateSensorValue.setText(result + "°C");
-                } else if ((result = msg.getData().getString("hopeTmp")) != null) {
-                    climate_sbValue.setText(result + "°C");
-                } else if ((result = msg.getData().getString("status")) != null) {
-                    climate_status.setText(result);
-                } else if ((result = msg.getData().getString("deviceStatus")) != null) {
-                    climateCondition.setText(result);
                 }
 
             }
@@ -224,6 +243,11 @@ public class climateActivity extends AppCompatActivity {
                 Thread getData = new Thread(runnable);
                 getData.start();
 
+
+                while(true){
+                    LatteMessage msg = shared.popMsg();
+                    shared.send(msg);
+                }
                 //shared.send(new LatteMessage("ClimateSensor"));
 
             } catch (IOException e) {
@@ -258,14 +282,14 @@ public class climateActivity extends AppCompatActivity {
 
 
     } //end onCreate
-
-    private void setClimate(int value) {
-        if (value < 10) {
-            value = 10;
-        } else if (value > 40) {
-            value = 40;
-        }
-    }
+//
+//    private void setClimate(int value) {
+//        if (value < 10) {
+//            value = 10;
+//        } else if (value > 40) {
+//            value = 40;
+//        }
+//    }
 
 
 }
@@ -312,18 +336,14 @@ class GetDataClimate implements Runnable {
                 Bundle bundle = new Bundle();
 
                 LatteMessage msgJson = gson.fromJson(msg,LatteMessage.class);
+                SensorData data = gson.fromJson(msgJson.getJsonData(),SensorData.class);
 
 
-                Log.i("json", msgJson.getJsonData());
-
-                if (msg.split(",").length == 2) {
-                    code = msg.split(",")[0];
-                    value = msg.split(",")[1];
+                Log.i("climate",data.toString());
+                if("TEMP".equals(data.getSensorID())){
+                    bundle.putString(data.getSensorID(),data.getStates());
+                    message.setData(bundle);
                 }
-
-
-
-
                 handler.sendMessage(message);
 
             }

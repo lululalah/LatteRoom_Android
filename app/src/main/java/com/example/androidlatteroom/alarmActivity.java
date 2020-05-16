@@ -18,6 +18,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -190,6 +191,18 @@ public class alarmActivity extends AppCompatActivity {
             min = mTimePicker.getCurrentMinute();
         }
 
+        int[] toggle_id = {
+                R.id.toggle_sun, R.id.toggle_mon, R.id.toggle_tue,
+                R.id.toggle_wed, R.id.toggle_thu, R.id.toggle_fri, R.id.toggle_sat
+        };
+
+        ToggleButton[] toggleList = new ToggleButton[7];
+
+        for (int i=0 ; i<7 ; i++) {
+            toggleList[i] = findViewById(toggle_id[i]);
+        }
+
+
 
 
         @SuppressLint("HandlerLeak") Handler handler = new Handler(){
@@ -202,6 +215,7 @@ public class alarmActivity extends AppCompatActivity {
                     Toast sendMsg = Toast.makeText(getApplicationContext(),
                             "알람정보 서버로 전송완료",Toast.LENGTH_SHORT);
                     sendMsg.show();
+
                 }
 
             }
@@ -242,16 +256,95 @@ public class alarmActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Alert data = new Alert(hour,min,"",true);
+
+
+                String weeks = "";
+                for (int j=0 ; j<7 ; j++) {
+                    if(toggleList[j].isChecked()){
+
+                        String day = toEngDay(toggleList[j].getText().toString());
+                        weeks += day + ",";
+                    }
+                    if(j==6){
+                        StringBuffer c = new StringBuffer(weeks);
+                        c.deleteCharAt(c.length()-1);
+                        weeks = c.toString();
+                    }
+                }
+                int h=0;
+                int m=0;
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    h = mTimePicker.getHour();
+                    m = mTimePicker.getMinute();
+                }
+
+
+                Alert data = new Alert(h,m,weeks,true);
                 LatteMessage msg = new LatteMessage(data);
+                Log.i("Alert",msg.toString());
                 shared.put(msg);
             }
         });
+
+//        String[] weeks = {"sun", "mon", "tue", "wed", "thu", "fri", "sat"};
+
+
+
+
+
+
+
+
+//        ToggleButton toggle_sun = findViewById(R.id.toggle_sun);
+//
+//        ToggleButton toggle_mon = findViewById(R.id.toggle_mon);
+//
+//        ToggleButton toggle_tue = findViewById(R.id.toggle_tue);
+//
+//        ToggleButton toggle_wed = findViewById(R.id.toggle_wed);
+//
+//        ToggleButton toggle_thu = findViewById(R.id.toggle_thu);
+//
+//        ToggleButton toggle_fri = findViewById(R.id.toggle_fri);
+//
+//        ToggleButton toggle_sat = findViewById(R.id.toggle_sat);
+
+
+
 
 
 
 
     }// onCreate() end
+    public String toEngDay(String s){
+        String result = "";
+
+        if("일".equals(s)){
+            result = "SUN";
+        }
+        if("월".equals(s)){
+            result = "MON";
+        }
+        if("화".equals(s)){
+            result = "TUE";
+        }
+        if("수".equals(s)){
+            result = "WED";
+        }
+        if("목".equals(s)){
+            result = "THU";
+        }
+        if("금".equals(s)){
+            result = "FRI";
+        }
+        if("토".equals(s)){
+            result = "SAT";
+        }
+        return result;
+    }
+
+
 }// Activity class end
 
 class GetDataTimer implements Runnable {

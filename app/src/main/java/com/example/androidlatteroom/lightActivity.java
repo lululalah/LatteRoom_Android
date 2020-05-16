@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -39,6 +40,7 @@ public class lightActivity extends AppCompatActivity {
     class SharedObject {
         private Object MONITOR = new Object();
         private LinkedList<String> list = new LinkedList<String>();
+        private LinkedList<LatteMessage> msgList = new LinkedList<LatteMessage>();
 
         SharedObject() {
         } // 생성자
@@ -46,7 +48,16 @@ public class lightActivity extends AppCompatActivity {
         public void put(String s) {
             synchronized (MONITOR) {
                 list.addLast(s);
-                Log.i("ArduinoTest", "공용객체에 데이터 입력");
+//                Log.i("ArduinoTest", "공용객체에 데이터 입력");
+                // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
+                MONITOR.notify();
+            }
+        }
+
+        public void put(LatteMessage s) {
+            synchronized (MONITOR) {
+                msgList.addLast(s);
+//                Log.i("ArduinoTest", "공용객체에 데이터 입력");
                 // 리스트 안에 문자열이 없어 대기하던 pop 매서드를 꺠워서 실행시킨다.
                 MONITOR.notify();
             }
@@ -63,11 +74,32 @@ public class lightActivity extends AppCompatActivity {
                         // 큐 구조에서 가져옴
                         result = list.removeFirst();
                     } catch (Exception e) {
-                        Log.i("ArduinoTest", e.toString());
+//                        Log.i("ArduinoTest", e.toString());
                     }
                 } else {
                     result = list.removeFirst();
-                    Log.i("ArduinoTest", "공용객체에서 데이터 추출");
+//                    Log.i("ArduinoTest", "공용객체에서 데이터 추출");
+                }
+            }
+            return result;
+        }
+
+        public LatteMessage popMsg() {
+            LatteMessage result = null;
+
+            synchronized (MONITOR) {
+                if (msgList.isEmpty()) {
+                    // 리스트 안에 문자열이 없으니까 일시 대기해야 한다.
+                    try {
+                        MONITOR.wait();
+                        // 큐 구조에서 가져옴
+                        result = msgList.removeFirst();
+                    } catch (Exception e) {
+//                        Log.i("ArduinoTest", e.toString());
+                    }
+                } else {
+                    result = msgList.removeFirst();
+//                    Log.i("ArduinoTest", "공용객체에서 데이터 추출");
                 }
             }
             return result;
@@ -77,25 +109,18 @@ public class lightActivity extends AppCompatActivity {
             try {
                 pr.println(msg);
                 pr.flush();
-
             } catch (Exception e) {
-                Log.i("test", e.toString());
+//                Log.i("test", e.toString());
             }
-
-
         }
+
         public void send(LatteMessage msg) {
-
-                try {
-                    String temp = gson.toJson(msg);
-                    pr.println(temp);
-                    pr.flush();
-
-                } catch (Exception e) {
-                    Log.i("test", e.toString());
-                }
-
-
+            try {
+                pr.println(gson.toJson(msg));
+                pr.flush();
+            } catch (Exception e) {
+//                Log.i("test", e.toString());
+            }
         }
 
     }
@@ -135,15 +160,21 @@ public class lightActivity extends AppCompatActivity {
 //                    lightPower.setText(power + "%");
 //
 //                }
+                if(msg.getData().getString("LIGHT")!=null){
+                    int power = Integer.valueOf(msg.getData().getString("LIGHT"));
+                    sb.setProgress(power);
+                    lightPower.setText(power+"%");
+                }
 
-                if (msg.getData().getString("On") != null) {
-                    int power = Integer.valueOf(msg.getData().getString("On"));
+
+                if (msg.getData().getString("ON") != null) {
+                    int power = Integer.valueOf(msg.getData().getString("ON"));
 
                     sb.setProgress(power);
                     lightPower.setText(power + "%");
                 }
 
-                if (msg.getData().getString("Off") != null) {
+                if (msg.getData().getString("OFF") != null) {
                     //String power = msg.getData().getString("Off");
                     sb.setProgress(0);
                     lightPower.setText("OFF");
@@ -154,21 +185,24 @@ public class lightActivity extends AppCompatActivity {
         };
 
 
-
+//        ===================== SeekBar Event ========================
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             Thread t;
-
+            LatteMessage msg;
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                t = new Thread(() -> {
+//                t = new Thread(() -> {
 
 //                    shared.send("tmp," + String.valueOf(progress));
-                    SensorData data = new SensorData("LightPower","On",Integer.toString(progress));
-                    LatteMessage msg = new LatteMessage(data);
-                    Log.i("repeat",msg.toString());
-                    shared.send(msg);
+                    SensorData data = new SensorData("LIGHT","ON",Integer.toString(progress));
+                    msg = new LatteMessage(data);
+                    //Log.i("repeat",msg.toString());
+                    lightPower.setText(progress+"%");
 
-                });
+//                    shared.put(msg);
+//                    shared.send(msg);
+
+//                });
 
 
 
@@ -181,10 +215,13 @@ public class lightActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                t.start();
+                shared.put(msg);
+//                t.start();
             }
         });
 
+
+//        ===================socket connect========================
         Thread t = new Thread(() -> {
             try {
                 socket = new Socket(host, 55566);
@@ -196,37 +233,15 @@ public class lightActivity extends AppCompatActivity {
                 // 해당 Runnable 객체에서 메서드를 이용하여 컴포넌트 값들의 값을 서버로 전송 or 받기.
                 GetDataLight getdataR = new GetDataLight(br, shared, handler);
                 Thread getDataT = new Thread(getdataR);
-//                Thread getData = new Thread(() -> {
-//                    try {
-//                        String msg = "";
-//                        while ((msg = br.readLine()) != null) {
-//
-//                            Log.i("test", "!!!!");
-//                            Log.i("test", msg);
-//                            curTmp = msg;
-//                            if (!"Off".equals(curTmp)) {
-//                                curtmp = Integer.valueOf(curTmp);
-//                            }
-//                            lightPower.setText(msg + "`");
-//
-//
-//                        }
-//                    } catch (IOException e) {
-//                        Log.i("test", e.toString());
-////                        try {
-////                            br.close();
-////                            pr.close();
-////                            socket.close();
-////                        } catch (IOException ex) {
-////                            ex.printStackTrace();
-////                        }
-//
-//                    }
-//
-//
-//                });
+
                 getDataT.start();
 
+                while(true){
+                    LatteMessage msg = shared.popMsg();
+                    shared.send(msg);
+
+//                    Log.i("sendSuc",msg.toString());
+                }
             } catch (IOException e) {
             }
         });
@@ -236,36 +251,42 @@ public class lightActivity extends AppCompatActivity {
 //        Thread t = new Thread(conn);
 //        t.start();
 
-
+//        ================On Btn====================
         onBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sb.setProgress(curtmp);
-                Thread t = new Thread(() -> {
+//                Thread t = new Thread(() -> {
 
-                    SensorData data = new SensorData("LightPower","On",Integer.toString(curtmp));
+                    SensorData data = new SensorData("LIGHT","ON",Integer.toString(curtmp));
                     LatteMessage msg = new LatteMessage(data);
-                    shared.send(msg);
+                    shared.put(msg);
+//                    shared.send(msg);
 
 
 //                    shared.send("On," + curtmp);
-                });
-                t.start();
+//                });
+//                t.start();
             }
         });
+
+
+//        ======================off Btn===============================
         offBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //sb.setProgress(0);
                 curtmp = sb.getProgress();
-                lightPower.setText("0");
-                Thread t = new Thread(() -> {
-                    SensorData data = new SensorData("LightPower","Off",Integer.toString(curtmp));
+                Log.i("fromServer",curtmp+"!");
+//                lightPower.setText("0");
+//                Thread t = new Thread(() -> {
+                    SensorData data = new SensorData("LIGHT","OFF",Integer.toString(curtmp));
                     LatteMessage msg = new LatteMessage(data);
-                    shared.send(msg);
+                    shared.put(msg);
+//                    shared.send(msg);
                     //shared.send("Off," + curtmp);
-                });
-                t.start();
+//                });
+//                t.start();
             }
         });
 
@@ -274,7 +295,7 @@ public class lightActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i("test", " " + socket.isConnected());
+        //Log.i("test", " " + socket.isConnected());
 
     }
 }
@@ -346,9 +367,9 @@ class GetDataLight implements Runnable {
 
             // Log.i("test","doGetData");
             // Log.i("test",String.valueOf(setData));
-
+            //Log.i("fromServer", "123");
             while ((msg = br.readLine()) != null) {
-                Log.i("test", msg);
+//                Log.i("fromServer", msg);
                 Message message = new Message();
                 Bundle bundle = new Bundle();
 
@@ -361,23 +382,21 @@ class GetDataLight implements Runnable {
 //                }
 
                 LatteMessage tempMsg = gson.fromJson(msg,LatteMessage.class);
-                Log.i("test",tempMsg.getJsonData());
+                //Log.i("test",tempMsg.getJsonData());
                 SensorData sensorData = gson.fromJson(tempMsg.getJsonData(),SensorData.class);
 
                 code = sensorData.getStates();
+                Log.i("fromServer",sensorData.toString());
                 value = sensorData.getStateDetail();
 
 
-                if ("tmp".equals(code)) {
-                    bundle.putString(code, value);
-                    message.setData(bundle);
 
-                }
-                if ("Off".equals(code)) {
-                    bundle.putString(code, value);
+                if ("OFF".equals(code)) {
+                    bundle.putString(code, "0");
+                    //Log.i("off",value);
                     message.setData(bundle);
                 }
-                if ("On".equals(code)) {
+                if ("ON".equals(code)) {
                     bundle.putString(code, value);
                     message.setData(bundle);
                 }
@@ -404,7 +423,7 @@ class GetDataLight implements Runnable {
 
             }
         } catch (IOException e) {
-            Log.i("test", e.toString());
+           // Log.i("test", e.toString());
 //                        try {
 //                            br.close();
 //                            pr.close();
