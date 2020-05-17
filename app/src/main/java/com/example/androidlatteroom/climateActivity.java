@@ -167,7 +167,7 @@ public class climateActivity extends AppCompatActivity {
         SeekBar climate_seekBar = findViewById(R.id.climate_seekBar);
         TextView climate_sbValue = findViewById(R.id.climate_sbValue); //희망온도설정
         TextView climateSensorValue = findViewById(R.id.climateSensorValue); //현재온도
-        TextView climateCondition = findViewById(R.id.climateCondition);
+//        TextView climateCondition = findViewById(R.id.climateCondition);
 
 
         //final SharedObject shared = new SharedObject();
