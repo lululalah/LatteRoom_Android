@@ -27,15 +27,15 @@ import java.util.LinkedList;
 
 public class lightActivity extends AppCompatActivity {
 
-    private static String host = "70.12.60.99";
-
+    //    private static String host = "70.12.60.99";
+    private static String host = "70.12.60.105";
     private Socket socket;
     private BufferedReader br;
     private PrintWriter pr;
     private String curTmp = "";
     private int curtmp = 0;
     Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
-   // Gson gson = new Gson();
+    // Gson gson = new Gson();
 
     class SharedObject {
         private Object MONITOR = new Object();
@@ -160,10 +160,10 @@ public class lightActivity extends AppCompatActivity {
 //                    lightPower.setText(power + "%");
 //
 //                }
-                if(msg.getData().getString("LIGHT")!=null){
+                if (msg.getData().getString("LIGHT") != null) {
                     int power = Integer.valueOf(msg.getData().getString("LIGHT"));
                     sb.setProgress(power);
-                    lightPower.setText(power+"%");
+                    lightPower.setText(power + "%");
                 }
 
 
@@ -189,21 +189,21 @@ public class lightActivity extends AppCompatActivity {
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             Thread t;
             LatteMessage msg;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 //                t = new Thread(() -> {
 
 //                    shared.send("tmp," + String.valueOf(progress));
-                    SensorData data = new SensorData("LIGHT","ON",Integer.toString(progress));
-                    msg = new LatteMessage(data);
-                    //Log.i("repeat",msg.toString());
-                    lightPower.setText(progress+"%");
+                SensorData data = new SensorData("LIGHT", "ON", Integer.toString(progress));
+                msg = new LatteMessage(data);
+                //Log.i("repeat",msg.toString());
+                lightPower.setText(progress + "%");
 
 //                    shared.put(msg);
 //                    shared.send(msg);
 
 //                });
-
 
 
             }
@@ -235,8 +235,8 @@ public class lightActivity extends AppCompatActivity {
                 Thread getDataT = new Thread(getdataR);
 
                 getDataT.start();
-
-                while(true){
+                shared.put(new LatteMessage("LIGHT"));
+                while (true) {
                     LatteMessage msg = shared.popMsg();
                     shared.send(msg);
 
@@ -258,9 +258,9 @@ public class lightActivity extends AppCompatActivity {
                 sb.setProgress(curtmp);
 //                Thread t = new Thread(() -> {
 
-                    SensorData data = new SensorData("LIGHT","ON",Integer.toString(curtmp));
-                    LatteMessage msg = new LatteMessage(data);
-                    shared.put(msg);
+                SensorData data = new SensorData("LIGHT", "ON", Integer.toString(curtmp));
+                LatteMessage msg = new LatteMessage(data);
+                shared.put(msg);
 //                    shared.send(msg);
 
 
@@ -277,14 +277,14 @@ public class lightActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //sb.setProgress(0);
                 curtmp = sb.getProgress();
-                Log.i("fromServer",curtmp+"!");
+                Log.i("fromServer", curtmp + "!");
 //                lightPower.setText("0");
 //                Thread t = new Thread(() -> {
-                    SensorData data = new SensorData("LIGHT","OFF",Integer.toString(curtmp));
-                    LatteMessage msg = new LatteMessage(data);
-                    shared.put(msg);
+                SensorData data = new SensorData("LIGHT", "OFF", Integer.toString(curtmp));
+                LatteMessage msg = new LatteMessage(data);
+                shared.put(msg);
 //                    shared.send(msg);
-                    //shared.send("Off," + curtmp);
+                //shared.send("Off," + curtmp);
 //                });
 //                t.start();
             }
@@ -339,16 +339,17 @@ public class lightActivity extends AppCompatActivity {
 
 class GetDataLight implements Runnable {
     private String msg;
-//    private String getData;
+    //    private String getData;
     private BufferedReader br;
-//    private TextView lightPower;
+    //    private TextView lightPower;
 //    private SeekBar sb;
     private Object shared;
-//    private int setData;
+    //    private int setData;
     private Handler handler;
 
     Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
-//    Gson gson = new Gson();
+
+    //    Gson gson = new Gson();
     GetDataLight(BufferedReader br, Object shared, Handler handler) {
         this.br = br;
 //        this.lightPower = lightPower;
@@ -374,33 +375,31 @@ class GetDataLight implements Runnable {
                 Bundle bundle = new Bundle();
 
 
-
 //                if (msg.split(",").length == 2) {
 //                    String[] sets = msg.split(",");
 //                    code = sets[0];
 //                    value = sets[1];
 //                }
+                try {
+                    LatteMessage tempMsg = gson.fromJson(msg, LatteMessage.class);
+                    //Log.i("test",tempMsg.getJsonData());
+                    SensorData sensorData = gson.fromJson(tempMsg.getJsonData(), SensorData.class);
 
-                LatteMessage tempMsg = gson.fromJson(msg,LatteMessage.class);
-                //Log.i("test",tempMsg.getJsonData());
-                SensorData sensorData = gson.fromJson(tempMsg.getJsonData(),SensorData.class);
-
-                code = sensorData.getStates();
-                Log.i("fromServer",sensorData.toString());
-                value = sensorData.getStateDetail();
+                    code = sensorData.getStates();
+                    Log.i("fromServer", sensorData.toString());
+                    value = sensorData.getStateDetail();
 
 
-
-                if ("OFF".equals(code)) {
-                    bundle.putString(code, "0");
-                    //Log.i("off",value);
-                    message.setData(bundle);
-                }
-                if ("ON".equals(code)) {
-                    bundle.putString(code, value);
-                    message.setData(bundle);
-                }
-                handler.sendMessage(message);
+                    if ("OFF".equals(code)) {
+                        bundle.putString(code, "0");
+                        //Log.i("off",value);
+                        message.setData(bundle);
+                    }
+                    if ("ON".equals(code)) {
+                        bundle.putString(code, value);
+                        message.setData(bundle);
+                    }
+                    handler.sendMessage(message);
 
 //                Log.i("test", "!!!!");
 //                Log.i("test", msg);
@@ -420,10 +419,12 @@ class GetDataLight implements Runnable {
 //                }
 //                lightPower.setText(msg + "`");
 
-
+                } catch (Exception e2) {
+                    Log.i("check", e2.toString());
+                }
             }
         } catch (IOException e) {
-           // Log.i("test", e.toString());
+            // Log.i("test", e.toString());
 //                        try {
 //                            br.close();
 //                            pr.close();

@@ -27,8 +27,8 @@ import java.util.LinkedList;
 public class bedActivity extends AppCompatActivity {
 
     // 접속할 서버주소 상수.
-    private static String host = "70.12.60.99";
-
+//    private static String host = "70.12.60.99";
+    private static String host = "70.12.60.105";
     private Socket socket;
     private BufferedReader br;
     private PrintWriter pr;

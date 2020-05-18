@@ -94,15 +94,14 @@
                     android:background="#80ffffff"
                     >
 
-                <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="15pt"
-                    android:layout_weight="1"
-                    android:text="AM 06:30"
-                    android:id="@+id/AlarmActivity"
-                    android:textSize="10pt"
-                    android:gravity="center"
-                    />
+                    <TextView
+                        android:id="@+id/AlarmActivity"
+                        android:layout_width="114dp"
+                        android:layout_height="15pt"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="AM 06:30"
+                        android:textSize="10pt" />
                 <Switch
                     android:layout_width="wrap_content"
                     android:layout_height="15pt"

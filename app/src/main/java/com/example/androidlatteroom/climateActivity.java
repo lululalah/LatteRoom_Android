@@ -29,7 +29,8 @@ public class climateActivity extends AppCompatActivity {
 
     //Gson gson = new Gson();
     Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
-    private static String host = "70.12.60.99";
+    //    private static String host = "70.12.60.99";
+    private static String host = "70.12.60.105";
 //    private Socket socket;
 //    private BufferedReader br;
 //    private PrintWriter pr;
@@ -166,7 +167,7 @@ public class climateActivity extends AppCompatActivity {
         SeekBar climate_seekBar = findViewById(R.id.climate_seekBar);
         TextView climate_sbValue = findViewById(R.id.climate_sbValue); //희망온도설정
         TextView climateSensorValue = findViewById(R.id.climateSensorValue); //현재온도
-        TextView climateCondition = findViewById(R.id.climateCondition);
+//        TextView climateCondition = findViewById(R.id.climateCondition);
 
 
         //final SharedObject shared = new SharedObject();
@@ -174,6 +175,7 @@ public class climateActivity extends AppCompatActivity {
         climate_seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             Thread t;
             LatteMessage msg;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //setClimate(i);
@@ -181,11 +183,11 @@ public class climateActivity extends AppCompatActivity {
                 climate_sbValue.setText(progress + "°C");
 
 //                t = new Thread(() -> {
-                    SensorData data = new SensorData("TEMP",Integer.toString(progress));
-                    msg = new LatteMessage(data);
+                SensorData data = new SensorData("TEMP", Integer.toString(progress));
+                msg = new LatteMessage(data);
 //                    shared.send("hopeTmp," + Integer.toString(progress));
 
-                    //Json 문자열로 변환
+                //Json 문자열로 변환
 //                    sendMsg msg = new sendMsg(code,value);
 //                    Log.i("test",msg.makeJson());
 //                    shared.send(msg.makeJson());
@@ -226,8 +228,8 @@ public class climateActivity extends AppCompatActivity {
 //                    climateCondition.setText(result);
 //                }
 
-                if((result = msg.getData().getString("TEMP"))!=null){
-                    Log.i("climate",result);
+                if ((result = msg.getData().getString("TEMP")) != null) {
+                    Log.i("climate", result);
                     climateSensorValue.setText(result + "°C");
                 }
 
@@ -243,8 +245,9 @@ public class climateActivity extends AppCompatActivity {
                 Thread getData = new Thread(runnable);
                 getData.start();
 
+                shared.put(new LatteMessage("TEMP"));
 
-                while(true){
+                while (true) {
                     LatteMessage msg = shared.popMsg();
                     shared.send(msg);
                 }
@@ -308,7 +311,7 @@ class GetDataClimate implements Runnable {
     private climateActivity.SharedObject shared;
 
     GetDataClimate(BufferedReader br,
-                    climateActivity.SharedObject shared, Handler handler) {
+                   climateActivity.SharedObject shared, Handler handler) {
         this.br = br;
 //        this.pr = pr;
 //        this.climateMSG = climateMSG;
@@ -319,8 +322,10 @@ class GetDataClimate implements Runnable {
         this.handler = handler;
 
     }
+
     //Gson gson  = new Gson();
     Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+
     @Override
     public void run() {
 
@@ -335,13 +340,13 @@ class GetDataClimate implements Runnable {
                 Message message = new Message();
                 Bundle bundle = new Bundle();
 
-                LatteMessage msgJson = gson.fromJson(msg,LatteMessage.class);
-                SensorData data = gson.fromJson(msgJson.getJsonData(),SensorData.class);
+                LatteMessage msgJson = gson.fromJson(msg, LatteMessage.class);
+                SensorData data = gson.fromJson(msgJson.getJsonData(), SensorData.class);
 
 
-                Log.i("climate",data.toString());
-                if("TEMP".equals(data.getSensorID())){
-                    bundle.putString(data.getSensorID(),data.getStates());
+                Log.i("climate", data.toString());
+                if ("TEMP".equals(data.getSensorID())) {
+                    bundle.putString(data.getSensorID(), data.getStates());
                     message.setData(bundle);
                 }
                 handler.sendMessage(message);
